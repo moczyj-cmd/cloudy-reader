@@ -249,6 +249,14 @@ function wavelengthToHex(wl) {
   return "#FF0000";
 }
 
+function kelvinToHex(kelvin) {
+  const k = parseInt(kelvin, 10) || 4600;
+  if (k <= 3200) return "#FF8A3D";
+  if (k <= 4200) return "#FFB969";
+  if (k <= 5200) return "#FFF1E0";
+  return "#9CE0FF";
+}
+
 function launchFullscreenAmbient(ambientConfig) {
   if (!isTopFrame) return;
   let fullscreenDiv = document.getElementById("cloudy-fullscreen-ambient");
@@ -298,9 +306,14 @@ function launchFullscreenAmbient(ambientConfig) {
   let kitchenWl = ambientConfig.kitchenWl || 480;
   let kitchenTemp = ambientConfig.kitchenTemp || 4600;
   let kitchenRhythm = ambientConfig.kitchenRhythm || 12;
+  let kitchenSlotWls =
+    ambientConfig.kitchenSlotWls && ambientConfig.kitchenSlotWls.length > 0
+      ? ambientConfig.kitchenSlotWls
+      : [kitchenWl];
 
   const renderBackground = () => {
     backgroundLayer.style.animation = "none";
+    backgroundLayer.style.backgroundImage = "none";
     if (lampType === "green") {
       if (greenMode === "cycle") {
         if (greenStep === 1) {
@@ -373,9 +386,19 @@ function launchFullscreenAmbient(ambientConfig) {
       }
     } else if (lampType === "kitchen") {
       const primaryColor = wavelengthToHex(kitchenWl);
-      const warmColor = kitchenTemp < 4000 ? "#FFA657" : "#00BFFF";
+      const secondaryColor =
+        kitchenSlotWls.length > 1
+          ? wavelengthToHex(kitchenSlotWls[kitchenSlotWls.length - 1])
+          : kelvinToHex(kitchenTemp);
+      const outerColor = kelvinToHex(kitchenTemp);
       backgroundLayer.style.background =
-        "radial-gradient(circle at 50% 50%, " + primaryColor + " 0%, " + warmColor + " 90%)";
+        "radial-gradient(circle at 50% 50%, " +
+        primaryColor +
+        " 0%, " +
+        secondaryColor +
+        " 55%, " +
+        outerColor +
+        " 100%)";
       backgroundLayer.style.animation =
         "cloudyGltBreatheFs " + kitchenRhythm + "s infinite alternate ease-in-out";
       backgroundLayer.style.filter = "none";
@@ -406,14 +429,18 @@ function launchFullscreenAmbient(ambientConfig) {
   });
 
   const primaryText = document.createElement("h1");
-  primaryText.innerText =
-    lampType === "green"
-      ? "Green Lamp"
-      : lampType === "blue"
-        ? "Blue Lamp"
-        : lampType === "kitchen"
-          ? "Light Kitchen (" + kitchenWl + "nm • " + kitchenTemp + "K)"
-          : "Amber Lamp";
+  const updateTitleText = () => {
+    primaryText.innerText =
+      lampType === "green"
+        ? "Green Lamp"
+        : lampType === "blue"
+          ? "Blue Lamp"
+          : lampType === "kitchen"
+            ? "Light Kitchen (" + kitchenWl + "nm • " + kitchenTemp + "K • " + kitchenRhythm + "s)"
+            : "Amber Lamp";
+  };
+  updateTitleText();
+
   Object.assign(primaryText.style, {
     color: "rgba(0,0,0,0.85)",
     fontSize: "2.5rem",
@@ -591,6 +618,53 @@ function launchFullscreenAmbient(ambientConfig) {
     buttonRack.appendChild(btnStaticA);
     buttonRack.appendChild(btnBlendA);
     updateABtns();
+  } else if (lampType === "kitchen") {
+    const btnWl = makeBtn();
+    const btnTemp = makeBtn();
+    const btnRhythm = makeBtn();
+    btnWl.classList.add("active");
+    btnTemp.classList.add("active");
+    btnRhythm.classList.add("active");
+
+    const updateKBtns = () => {
+      btnWl.innerHTML =
+        '<span class="fs-tile-label">WAVELENGTH</span><span class="fs-hz-readout">' +
+        kitchenWl +
+        " nm</span>";
+      btnTemp.innerHTML =
+        '<span class="fs-tile-label">COLOR TEMP</span><span class="fs-hz-readout">' +
+        kitchenTemp +
+        " K</span>";
+      btnRhythm.innerHTML =
+        '<span class="fs-tile-label">RHYTHM</span><span class="fs-hz-readout">' +
+        kitchenRhythm +
+        " sec</span>";
+      updateTitleText();
+    };
+
+    btnWl.onclick = (e) => {
+      e.stopPropagation();
+      kitchenWl = kitchenWl >= 660 ? 460 : kitchenWl + 20;
+      renderBackground();
+      updateKBtns();
+    };
+    btnTemp.onclick = (e) => {
+      e.stopPropagation();
+      kitchenTemp = kitchenTemp >= 6500 ? 2700 : kitchenTemp + 400;
+      renderBackground();
+      updateKBtns();
+    };
+    btnRhythm.onclick = (e) => {
+      e.stopPropagation();
+      kitchenRhythm = kitchenRhythm >= 16 ? 4 : kitchenRhythm + 2;
+      renderBackground();
+      updateKBtns();
+    };
+
+    buttonRack.appendChild(btnWl);
+    buttonRack.appendChild(btnTemp);
+    buttonRack.appendChild(btnRhythm);
+    updateKBtns();
   }
 
   uiWrapper.appendChild(buttonRack);
@@ -721,7 +795,7 @@ function executeAudioState(tilesArray) {
 }
 
 // -------------------------------------------------------------
-// Background Luma & Active Loadout Resolver
+// Tab-Isolated Background Luma & Active Loadout Resolver
 // -------------------------------------------------------------
 function detectPageTheme() {
   function getLuma(colorStr) {
@@ -739,12 +813,19 @@ function detectPageTheme() {
     return null;
   }
 
+  const darkFilterEl = document.getElementById("cloudy-dark-bg-style");
+  const hadDarkFilter = !!darkFilterEl && !darkFilterEl.disabled;
+  if (darkFilterEl) darkFilterEl.disabled = true;
+
   let isDark = false;
   let elementsToScan = [];
   if (typeof document.elementFromPoint === "function") {
     let centerEl = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
     while (centerEl && centerEl !== document.documentElement) {
-      elementsToScan.push(centerEl);
+      const elId = centerEl.id || "";
+      if (!elId.startsWith("cloudy-") && !elId.startsWith("lotus-")) {
+        elementsToScan.push(centerEl);
+      }
       centerEl = centerEl.parentElement;
     }
   }
@@ -800,6 +881,8 @@ function detectPageTheme() {
     } catch (e) {}
   }
 
+  if (darkFilterEl && hadDarkFilter) darkFilterEl.disabled = false;
+
   return isDark;
 }
 
@@ -837,8 +920,32 @@ function resolveActiveLoadout(state) {
 }
 
 // -------------------------------------------------------------
-// The Master Typography Engine (Includes Cloud E-Reader Piercer)
+// The Master Typography Engine (Includes Kindle Cloud Reader Iframe & Shadow Piercer)
 // -------------------------------------------------------------
+function injectStyleIntoNestedTargets(cssText) {
+  // 1. Pierce accessible same-origin iframes (e.g., Kindle Cloud Reader book panes)
+  document.querySelectorAll("iframe").forEach((frame) => {
+    try {
+      const doc = frame.contentDocument;
+      if (doc && (doc.head || doc.documentElement)) {
+        let existing = doc.getElementById("cloudy-theme-styles");
+        if (!cssText) {
+          if (existing) existing.remove();
+          return;
+        }
+        if (!existing) {
+          existing = doc.createElement("style");
+          existing.id = "cloudy-theme-styles";
+          (doc.head || doc.documentElement).appendChild(existing);
+        }
+        if (existing.textContent !== cssText) {
+          existing.textContent = cssText;
+        }
+      }
+    } catch (e) {}
+  });
+}
+
 function applyTypographyEngine(manifestState, resolved) {
   let existingSheet = document.getElementById("cloudy-theme-styles");
   if (existingSheet) existingSheet.remove();
@@ -854,6 +961,7 @@ function applyTypographyEngine(manifestState, resolved) {
     !manifestState.adaptiveContrast &&
     !manifestState.kineticFocus
   ) {
+    injectStyleIntoNestedTargets("");
     return;
   }
 
@@ -873,10 +981,10 @@ function applyTypographyEngine(manifestState, resolved) {
   domStyle.id = "cloudy-theme-styles";
 
   const paintTarget =
-    'body, div:not([class*="icon"]):not([class*="symbol"]):not([class*="code"]), p, h1, h2, h3, h4, h5, h6, span:not([class*="icon"]):not([class*="symbol"]):not([class*="token"]), a, li, td, th, strong, b, em, label, button, input, textarea, yt-formatted-string, yt-attributed-string, message-content, text-message-content, model-response, user-message, .markdown-body, #kr-renderer, #kr-renderer *, #kindleReader_content, #kindleReader_content *, .kp-notebook-printable, .kcr-reading-area, svg text, svg tspan';
+    'body, div:not([class*="icon"]):not([class*="symbol"]):not([class*="code"]), p, h1, h2, h3, h4, h5, h6, span:not([class*="icon"]):not([class*="symbol"]):not([class*="token"]), a, li, td, th, strong, b, em, label, button, input, textarea, yt-formatted-string, yt-attributed-string, message-content, text-message-content, model-response, user-message, .markdown-body, #kr-renderer, #kr-renderer *, #kindleReader_content, #kindleReader_content *, .kp-notebook-printable, .kcr-reading-area, [id*="kindleReader"] *, .calibre, .calibre *, svg text, svg tspan';
 
   const layoutTarget =
-    "p, li, td, th, blockquote, dd, dt, figcaption, article p, section p, #content-text, yt-attributed-string#content-text, #description-inline-expander, .markdown-body, .markdown-body p, .markdown-body li, message-content, message-content p, text-message-content, model-response, user-message, #kr-renderer p, #kr-renderer div, #kindleReader_content p, .kcr-reading-area p";
+    'p, li, td, th, blockquote, dd, dt, figcaption, article p, section p, #content-text, yt-attributed-string#content-text, #description-inline-expander, .markdown-body, .markdown-body p, .markdown-body li, message-content, message-content p, text-message-content, model-response, user-message, #kr-renderer p, #kr-renderer div, #kr-renderer span, #kindleReader_content p, #kindleReader_content div, #kindleReader_content span, .kcr-reading-area p, .kcr-reading-area span, [id*="kindleReader"] p, [id*="kindleReader"] span';
 
   let layoutRules = "word-break: break-word !important; overflow-wrap: break-word !important; ";
   let paintRules = "";
@@ -911,7 +1019,7 @@ function applyTypographyEngine(manifestState, resolved) {
   const headTarget = document.head || document.documentElement;
   const familyRule = activeFontObj.family ? "font-family: " + activeFontObj.family + " !important;" : "";
 
-  domStyle.textContent =
+  const compiledCSS =
     activeFontObj.url +
     " " +
     paintTarget +
@@ -926,7 +1034,10 @@ function applyTypographyEngine(manifestState, resolved) {
     " } " +
     "cloudy-focus { font-weight: var(--cloudy-kinetic-weight, 700) !important; color: inherit !important; opacity: 1 !important; display: inline !important; }";
 
+  domStyle.textContent = compiledCSS;
+
   if (headTarget) headTarget.appendChild(domStyle);
+  injectStyleIntoNestedTargets(compiledCSS);
 }
 
 // -------------------------------------------------------------
@@ -948,21 +1059,28 @@ function evaluateAdaptiveContrast(state, resolved) {
   const kineticLightWeight = useKinetic ? "700" : "inherit";
   const kineticDarkWeight = useKinetic ? "500" : "inherit";
 
-  if (!useContrast) {
-    document.documentElement.style.setProperty("--cloudy-font-weight", "400");
-    document.documentElement.style.setProperty("--cloudy-kinetic-weight", kineticLightWeight);
-    return;
-  }
+  const targetWeight = !useContrast ? "400" : resolved.isDarkPage ? darkWeight : lightWeight;
+  const targetKineticWeight = !useContrast
+    ? kineticLightWeight
+    : resolved.isDarkPage
+      ? kineticDarkWeight
+      : kineticLightWeight;
 
-  const isDark = resolved.isDarkPage;
-  document.documentElement.style.setProperty(
-    "--cloudy-font-weight",
-    isDark ? darkWeight : lightWeight
-  );
-  document.documentElement.style.setProperty(
-    "--cloudy-kinetic-weight",
-    isDark ? kineticDarkWeight : kineticLightWeight
-  );
+  document.documentElement.style.setProperty("--cloudy-font-weight", targetWeight);
+  document.documentElement.style.setProperty("--cloudy-kinetic-weight", targetKineticWeight);
+
+  // Sync CSS variables into accessible same-origin iframes
+  document.querySelectorAll("iframe").forEach((frame) => {
+    try {
+      if (frame.contentDocument && frame.contentDocument.documentElement) {
+        frame.contentDocument.documentElement.style.setProperty("--cloudy-font-weight", targetWeight);
+        frame.contentDocument.documentElement.style.setProperty(
+          "--cloudy-kinetic-weight",
+          targetKineticWeight
+        );
+      }
+    } catch (e) {}
+  });
 }
 
 // -------------------------------------------------------------
@@ -1226,6 +1344,7 @@ const cloudyObserver = new MutationObserver((mutations) => {
 
     requestAnimationFrame(() => {
       const resolved = resolveActiveLoadout(cachedCloudyState);
+      applyTypographyEngine(cachedCloudyState, resolved);
       evaluateAdaptiveContrast(cachedCloudyState, resolved);
       applyKineticFocus(cachedCloudyState, resolved, true);
       initCloudyObserver();

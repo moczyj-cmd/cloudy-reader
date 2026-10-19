@@ -78,11 +78,13 @@ const DEFAULT_AUTOMATCH_SETS = {
 
 const THEME_ID_MAP = ["", "studio-pro", "green", "purple", "dark", "orange", "blue"];
 const TINT_MODES = ["off", "red", "amber", "blackout"];
-const MAX_NOTES_CHARS = 440;
+const MAX_NOTES_CHARS = 2000;
 
 const CloudyEngine = {
+  activeTabIsDark: false,
+
   state: {
-    rosterVersion: 10,
+    rosterVersion: 11,
     selectedTint: "red",
     shieldIntensity: 45,
     curatedThemeIndex: 0, // 0=Native, 1-20=Fonts, 21=Static1, 22=Static2, 23=AutoMatch1, 24=AutoMatch2
@@ -94,6 +96,7 @@ const CloudyEngine = {
     adaptiveContrast: false,
     kineticFocus: false,
     userNotes: "",
+    notesInHud: false,
 
     static1: JSON.parse(JSON.stringify(DEFAULT_STATIC_SETS.static1)),
     static2: JSON.parse(JSON.stringify(DEFAULT_STATIC_SETS.static2)),
@@ -238,6 +241,7 @@ const CloudyEngine = {
 
     this.nodes.cloudyNotesArea = document.getElementById("cloudyNotesArea");
     this.nodes.notesCharCount = document.getElementById("notesCharCount");
+    this.nodes.notesHudToggleBtn = document.getElementById("notesHudToggleBtn");
 
     this.nodes.themePrev = document.getElementById("themePrev");
     this.nodes.themeNext = document.getElementById("themeNext");
@@ -281,6 +285,8 @@ const CloudyEngine = {
     this.nodes.autoMatchDeckBtn = document.getElementById("autoMatchDeckBtn");
     this.nodes.amDeckLightName = document.getElementById("amDeckLightName");
     this.nodes.amDeckDarkName = document.getElementById("amDeckDarkName");
+    this.nodes.amDeckLightCard = document.getElementById("amDeckLightCard");
+    this.nodes.amDeckDarkCard = document.getElementById("amDeckDarkCard");
 
     this.nodes.html = document.documentElement;
     this.nodes.shieldSlider = document.getElementById("shield-slider");
@@ -291,7 +297,6 @@ const CloudyEngine = {
     this.nodes.sensoryRows = document.querySelectorAll(".sensory-row[data-tile-id]");
     this.nodes.tintBtns = document.querySelectorAll(".tint-btn[data-tint]");
     this.nodes.hzReadout = document.getElementById("hzReadout");
-    this.nodes.aboutMenuBtn = document.getElementById("aboutMenuBtn");
 
     this.nodes.ambientToggle = document.getElementById("ambientToggle");
     this.nodes.ambientOverlay = document.getElementById("ambientOverlay");
@@ -354,11 +359,47 @@ const CloudyEngine = {
     }
   },
 
+  escapeHTML(rawStr) {
+    return String(rawStr || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  },
+
   updateNotesCounter(textVal) {
     const cleanText = (textVal || "").substring(0, MAX_NOTES_CHARS);
     if (this.nodes.notesCharCount) {
       this.nodes.notesCharCount.textContent =
         String(cleanText.length) + " Characters / " + String(MAX_NOTES_CHARS) + " Characters";
+    }
+  },
+
+  renderNotesHudBtn() {
+    if (!this.nodes.notesHudToggleBtn) return;
+    const isPinned = !!this.state.notesInHud;
+    this.nodes.notesHudToggleBtn.classList.toggle("active", isPinned);
+    this.nodes.notesHudToggleBtn.textContent = isPinned ? "Remove from HUD?" : "Display in HUD?";
+  },
+
+  restoreDefaultHUD() {
+    if (this.state.notesInHud) {
+      const rawNotes =
+        this.state.userNotes && this.state.userNotes.trim()
+          ? this.state.userNotes.trim()
+          : "No notes written yet. Type inside the Notes tab to display your scratchpad here.";
+      const safeNotes = this.escapeHTML(rawNotes);
+      const shouldScroll = rawNotes.length > 95 || rawNotes.split("\n").length > 3;
+      this.setHUDText(
+        '<span class="hud-header">NOTES: <span class="hud-font-name">Pinned Scratchpad</span></span><span class="hud-lore">' +
+          safeNotes +
+          "</span>",
+        true,
+        shouldScroll
+      );
+    } else {
+      this.setHUDText(this.originalDisclaimerText, false, false);
     }
   },
 
@@ -380,18 +421,14 @@ const CloudyEngine = {
     }
   },
 
-  updateTypoControlRows() {
+  updateTypoControlRows(kineticVal, contrastVal) {
+    const kActive = kineticVal !== undefined ? kineticVal : this.state.kineticFocus;
+    const cActive = contrastVal !== undefined ? contrastVal : this.state.adaptiveContrast;
     if (this.nodes.kineticFocusRow) {
-      this.nodes.kineticFocusRow.setAttribute(
-        "data-state",
-        this.state.kineticFocus ? "enabled" : "disabled"
-      );
+      this.nodes.kineticFocusRow.setAttribute("data-state", kActive ? "enabled" : "disabled");
     }
     if (this.nodes.adaptiveContrastRow) {
-      this.nodes.adaptiveContrastRow.setAttribute(
-        "data-state",
-        this.state.adaptiveContrast ? "enabled" : "disabled"
-      );
+      this.nodes.adaptiveContrastRow.setAttribute("data-state", cActive ? "enabled" : "disabled");
     }
   },
 
@@ -420,7 +457,7 @@ const CloudyEngine = {
     this.setHUDText(htmlText, true, false);
     if (this.hudTimeout) clearTimeout(this.hudTimeout);
     this.hudTimeout = setTimeout(() => {
-      this.setHUDText(this.originalDisclaimerText, false, false);
+      this.restoreDefaultHUD();
     }, 2200);
   },
 
@@ -720,6 +757,7 @@ const CloudyEngine = {
     });
   },
 
+  // Updates Right-Column visual readouts from a preset loadout without polluting other tabs
   syncMainDeckIndicatorsFromLoadout(loadoutData, themeIndex) {
     if (!loadoutData) return;
 
@@ -729,55 +767,79 @@ const CloudyEngine = {
       this.applyUIThemeToDOM(this.state.previousUiTheme || "blue");
     }
 
-    if (loadoutData.contrast !== undefined) {
-      this.state.adaptiveContrast = !!loadoutData.contrast;
-    }
+    this.updateTypoControlRows(!!loadoutData.kinetic, !!loadoutData.contrast);
 
-    if (loadoutData.kinetic !== undefined) {
-      this.state.kineticFocus = !!loadoutData.kinetic;
+    if (this.nodes.fontModeCycleBtn) {
+      if (loadoutData.size && loadoutData.size > 0) {
+        this.nodes.fontModeCycleBtn.textContent = String(loadoutData.size);
+        this.nodes.fontModeCycleBtn.classList.add("active-mode");
+      } else {
+        this.nodes.fontModeCycleBtn.textContent = "aA";
+        this.nodes.fontModeCycleBtn.classList.remove("active-mode");
+      }
     }
-
-    this.updateTypoControlRows();
 
     if (loadoutData.tint && loadoutData.tint !== "off") {
-      this.state.selectedTint = loadoutData.tint;
-      this.state.shieldIntensity =
-        loadoutData.tintIntensity !== undefined ? loadoutData.tintIntensity : 20;
+      const tInt = loadoutData.tintIntensity !== undefined ? loadoutData.tintIntensity : 20;
       if (this.nodes.shieldSlider) {
-        this.nodes.shieldSlider.value = this.state.shieldIntensity;
-        this.nodes.intensityDisplay.textContent = this.state.shieldIntensity + "%";
+        this.nodes.shieldSlider.value = tInt;
+        this.nodes.intensityDisplay.textContent = tInt + "%";
       }
       this.nodes.tintBtns.forEach((b) => {
         b.classList.toggle("active", b.getAttribute("data-tint") === loadoutData.tint);
       });
     } else {
-      this.state.selectedTint = "off";
       this.nodes.tintBtns.forEach((b) => {
         b.classList.remove("active");
       });
     }
   },
 
+  // Pings the active tab immediately on popup open so Auto-Match readouts match reality
   syncAutoMatchReadoutWithActiveTab(amPair) {
     if (!amPair) return;
+    const applySideReadout = (isDark) => {
+      this.activeTabIsDark = !!isDark;
+      if (this.nodes.amDeckLightCard && this.nodes.amDeckDarkCard) {
+        this.nodes.amDeckLightCard.classList.toggle("active-side", !this.activeTabIsDark);
+        this.nodes.amDeckDarkCard.classList.toggle("active-side", this.activeTabIsDark);
+      }
+      const activeSide = this.activeTabIsDark ? amPair.dark : amPair.light;
+      this.syncMainDeckIndicatorsFromLoadout(activeSide, amPair.theme || 0);
+    };
+
     if (typeof chrome !== "undefined" && chrome.tabs) {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs && tabs[0] && tabs[0].id) {
           chrome.tabs.sendMessage(tabs[0].id, { action: "queryTabTheme" }, (resp) => {
             if (chrome.runtime.lastError || !resp) {
-              this.syncMainDeckIndicatorsFromLoadout(amPair.light, amPair.theme || 0);
+              applySideReadout(false);
               return;
             }
-            const activeSide = resp.isDarkPage ? amPair.dark : amPair.light;
-            this.syncMainDeckIndicatorsFromLoadout(activeSide, amPair.theme || 0);
+            applySideReadout(!!resp.isDarkPage);
           });
         } else {
-          this.syncMainDeckIndicatorsFromLoadout(amPair.light, amPair.theme || 0);
+          applySideReadout(false);
         }
       });
     } else {
-      this.syncMainDeckIndicatorsFromLoadout(amPair.light, amPair.theme || 0);
+      applySideReadout(false);
     }
+  },
+
+  // Returns the active preset loadout object if a Static Set or Auto-Match is currently active
+  getActivePresetTarget() {
+    const idx = this.state.curatedThemeIndex || 0;
+    if (idx === 21 || idx === 22) {
+      return this.state["static" + (idx - 20)];
+    }
+    if (idx === 23 || idx === 24) {
+      const amPair = this.state["autoMatch" + (idx - 22)];
+      if (amPair) {
+        return this.activeTabIsDark ? amPair.dark : amPair.light;
+      }
+    }
+    return null;
   },
 
   activateCustomOrAutoMatch(selectedIdx) {
@@ -785,6 +847,10 @@ const CloudyEngine = {
     this.highlightFontButtons(selectedIdx);
 
     if (selectedIdx === 21 || selectedIdx === 22) {
+      if (this.nodes.amDeckLightCard && this.nodes.amDeckDarkCard) {
+        this.nodes.amDeckLightCard.classList.remove("active-side");
+        this.nodes.amDeckDarkCard.classList.remove("active-side");
+      }
       const setNum = selectedIdx - 20;
       const staticData = this.state["static" + setNum];
       if (staticData) {
@@ -822,7 +888,7 @@ const CloudyEngine = {
       });
     }
 
-    // Notes Scratchpad Live Counter & Persistence (440-Character Limit)
+    // Notes Scratchpad Live Counter & Persistence (2,000-Character Limit)
     if (this.nodes.cloudyNotesArea) {
       this.nodes.cloudyNotesArea.addEventListener("input", (e) => {
         const cleanVal = (e.target.value || "").substring(0, MAX_NOTES_CHARS);
@@ -831,6 +897,22 @@ const CloudyEngine = {
         }
         this.state.userNotes = cleanVal;
         this.updateNotesCounter(cleanVal);
+        if (this.state.notesInHud) {
+          this.restoreDefaultHUD();
+        }
+        if (typeof chrome !== "undefined" && chrome.storage) {
+          chrome.storage.local.set({ CloudyReader_ActiveManifest: this.state });
+        }
+      });
+    }
+
+    // "Display in HUD?" / "Remove from HUD?" Toggle Button inside Notes Status Bar
+    if (this.nodes.notesHudToggleBtn) {
+      this.nodes.notesHudToggleBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.state.notesInHud = !this.state.notesInHud;
+        this.renderNotesHudBtn();
+        this.restoreDefaultHUD();
         if (typeof chrome !== "undefined" && chrome.storage) {
           chrome.storage.local.set({ CloudyReader_ActiveManifest: this.state });
         }
@@ -848,9 +930,12 @@ const CloudyEngine = {
       });
     });
 
-    // Universal [data-tooltip] Hover Listener
+    // Universal [data-tooltip] Hover Listener (Restores Pinned Notes or Disclaimer on Mouseleave)
     document.querySelectorAll("[data-tooltip]").forEach((el) => {
       el.addEventListener("mouseenter", (e) => {
+        if (e.currentTarget.id === "notesHudToggleBtn" && this.state.notesInHud) {
+          return;
+        }
         const rawTip = e.currentTarget.getAttribute("data-tooltip") || "";
         if (rawTip.includes(":")) {
           const parts = rawTip.split(":");
@@ -878,7 +963,7 @@ const CloudyEngine = {
         }
       });
       el.addEventListener("mouseleave", () => {
-        this.setHUDText(this.originalDisclaimerText, false, false);
+        this.restoreDefaultHUD();
       });
     });
 
@@ -976,18 +1061,23 @@ const CloudyEngine = {
     }
 
     this.nodes.cFont.addEventListener("change", (e) => {
-      const setKey = "static" + (this.state.activeStaticSet || 1);
+      const setNum = this.state.activeStaticSet || 1;
+      const setKey = "static" + setNum;
       const selectedFontIdx = parseInt(e.target.value, 10);
       this.state[setKey].font = selectedFontIdx;
       this.nodes.cFont.classList.toggle("active", selectedFontIdx > 0);
-      this.showFontLoreInHUD(20 + (this.state.activeStaticSet || 1));
+      this.showFontLoreInHUD(20 + setNum);
       this.lockDownSilo();
     });
 
     this.nodes.cSize.addEventListener("change", (e) => {
-      const setKey = "static" + (this.state.activeStaticSet || 1);
+      const setNum = this.state.activeStaticSet || 1;
+      const setKey = "static" + setNum;
       this.state[setKey].size = parseInt(e.target.value, 10);
       this.nodes.cSize.classList.toggle("active", this.state[setKey].size > 0);
+      if (this.state.curatedThemeIndex === 20 + setNum) {
+        this.syncMainDeckIndicatorsFromLoadout(this.state[setKey], this.state[setKey].theme || 0);
+      }
       this.lockDownSilo();
     });
 
@@ -1008,21 +1098,30 @@ const CloudyEngine = {
     });
 
     this.nodes.cKinetic.addEventListener("click", () => {
-      const setKey = "static" + (this.state.activeStaticSet || 1);
+      const setNum = this.state.activeStaticSet || 1;
+      const setKey = "static" + setNum;
       this.state[setKey].kinetic = !this.state[setKey].kinetic;
       this.renderStaticSetVaultUI();
+      if (this.state.curatedThemeIndex === 20 + setNum) {
+        this.syncMainDeckIndicatorsFromLoadout(this.state[setKey], this.state[setKey].theme || 0);
+      }
       this.lockDownSilo();
     });
 
     this.nodes.cContrast.addEventListener("click", () => {
-      const setKey = "static" + (this.state.activeStaticSet || 1);
+      const setNum = this.state.activeStaticSet || 1;
+      const setKey = "static" + setNum;
       this.state[setKey].contrast = !this.state[setKey].contrast;
       this.renderStaticSetVaultUI();
+      if (this.state.curatedThemeIndex === 20 + setNum) {
+        this.syncMainDeckIndicatorsFromLoadout(this.state[setKey], this.state[setKey].theme || 0);
+      }
       this.lockDownSilo();
     });
 
     this.nodes.cTint.addEventListener("click", () => {
-      const setKey = "static" + (this.state.activeStaticSet || 1);
+      const setNum = this.state.activeStaticSet || 1;
+      const setKey = "static" + setNum;
       let currentTint = this.state[setKey].tint || "off";
       let nextTint = TINT_MODES[(TINT_MODES.indexOf(currentTint) + 1) % TINT_MODES.length];
       this.state[setKey].tint = nextTint;
@@ -1030,14 +1129,21 @@ const CloudyEngine = {
         this.state[setKey].tintIntensity = 20;
       }
       this.renderStaticSetVaultUI();
+      if (this.state.curatedThemeIndex === 20 + setNum) {
+        this.syncMainDeckIndicatorsFromLoadout(this.state[setKey], this.state[setKey].theme || 0);
+      }
       this.lockDownSilo();
     });
 
     this.nodes.cTintSlider.addEventListener("input", (e) => {
       const val = parseInt(e.target.value, 10);
       this.nodes.cTintVal.textContent = val + "%";
-      const setKey = "static" + (this.state.activeStaticSet || 1);
+      const setNum = this.state.activeStaticSet || 1;
+      const setKey = "static" + setNum;
       this.state[setKey].tintIntensity = val;
+      if (this.state.curatedThemeIndex === 20 + setNum) {
+        this.syncMainDeckIndicatorsFromLoadout(this.state[setKey], this.state[setKey].theme || 0);
+      }
       this.lockDownSilo();
     });
 
@@ -1112,10 +1218,14 @@ const CloudyEngine = {
 
     if (this.nodes.amSize) {
       this.nodes.amSize.addEventListener("change", (e) => {
-        const amKey = "autoMatch" + (this.state.activeVaultAutoMatch || 1);
+        const amNum = this.state.activeVaultAutoMatch || 1;
+        const amKey = "autoMatch" + amNum;
         const side = this.state.activeVaultAmSide || "light";
         this.state[amKey][side].size = parseInt(e.target.value, 10);
         this.renderAutoMatchVaultUI();
+        if (this.state.curatedThemeIndex === 22 + amNum) {
+          this.syncAutoMatchReadoutWithActiveTab(this.state[amKey]);
+        }
         this.lockDownSilo();
       });
     }
@@ -1140,27 +1250,36 @@ const CloudyEngine = {
 
     if (this.nodes.amKinetic) {
       this.nodes.amKinetic.addEventListener("click", () => {
-        const amKey = "autoMatch" + (this.state.activeVaultAutoMatch || 1);
+        const amNum = this.state.activeVaultAutoMatch || 1;
+        const amKey = "autoMatch" + amNum;
         const side = this.state.activeVaultAmSide || "light";
         this.state[amKey][side].kinetic = !this.state[amKey][side].kinetic;
         this.renderAutoMatchVaultUI();
+        if (this.state.curatedThemeIndex === 22 + amNum) {
+          this.syncAutoMatchReadoutWithActiveTab(this.state[amKey]);
+        }
         this.lockDownSilo();
       });
     }
 
     if (this.nodes.amContrast) {
       this.nodes.amContrast.addEventListener("click", () => {
-        const amKey = "autoMatch" + (this.state.activeVaultAutoMatch || 1);
+        const amNum = this.state.activeVaultAutoMatch || 1;
+        const amKey = "autoMatch" + amNum;
         const side = this.state.activeVaultAmSide || "light";
         this.state[amKey][side].contrast = !this.state[amKey][side].contrast;
         this.renderAutoMatchVaultUI();
+        if (this.state.curatedThemeIndex === 22 + amNum) {
+          this.syncAutoMatchReadoutWithActiveTab(this.state[amKey]);
+        }
         this.lockDownSilo();
       });
     }
 
     if (this.nodes.amTint) {
       this.nodes.amTint.addEventListener("click", () => {
-        const amKey = "autoMatch" + (this.state.activeVaultAutoMatch || 1);
+        const amNum = this.state.activeVaultAutoMatch || 1;
+        const amKey = "autoMatch" + amNum;
         const side = this.state.activeVaultAmSide || "light";
         let currentTint = this.state[amKey][side].tint || "off";
         let nextTint = TINT_MODES[(TINT_MODES.indexOf(currentTint) + 1) % TINT_MODES.length];
@@ -1169,6 +1288,9 @@ const CloudyEngine = {
           this.state[amKey][side].tintIntensity = 20;
         }
         this.renderAutoMatchVaultUI();
+        if (this.state.curatedThemeIndex === 22 + amNum) {
+          this.syncAutoMatchReadoutWithActiveTab(this.state[amKey]);
+        }
         this.lockDownSilo();
       });
     }
@@ -1177,19 +1299,31 @@ const CloudyEngine = {
       this.nodes.amTintSlider.addEventListener("input", (e) => {
         const val = parseInt(e.target.value, 10);
         this.nodes.amTintVal.textContent = val + "%";
-        const amKey = "autoMatch" + (this.state.activeVaultAutoMatch || 1);
+        const amNum = this.state.activeVaultAutoMatch || 1;
+        const amKey = "autoMatch" + amNum;
         const side = this.state.activeVaultAmSide || "light";
         this.state[amKey][side].tintIntensity = val;
+        if (this.state.curatedThemeIndex === 22 + amNum) {
+          this.syncAutoMatchReadoutWithActiveTab(this.state[amKey]);
+        }
         this.lockDownSilo();
       });
     }
 
-    // Right-Column Typography Controls
+    // Right-Column Typography Controls (Updates Active Preset Side if Preset Is Active)
     if (this.nodes.kineticFocusRow) {
       this.nodes.kineticFocusRow.addEventListener("click", (e) => {
         e.stopPropagation();
-        this.state.kineticFocus = !this.state.kineticFocus;
-        this.updateTypoControlRows();
+        const presetTarget = this.getActivePresetTarget();
+        if (presetTarget) {
+          presetTarget.kinetic = !presetTarget.kinetic;
+          this.updateTypoControlRows(presetTarget.kinetic, presetTarget.contrast);
+          this.renderStaticSetVaultUI();
+          this.renderAutoMatchVaultUI();
+        } else {
+          this.state.kineticFocus = !this.state.kineticFocus;
+          this.updateTypoControlRows();
+        }
         this.lockDownSilo();
       });
     }
@@ -1197,8 +1331,16 @@ const CloudyEngine = {
     if (this.nodes.adaptiveContrastRow) {
       this.nodes.adaptiveContrastRow.addEventListener("click", (e) => {
         e.stopPropagation();
-        this.state.adaptiveContrast = !this.state.adaptiveContrast;
-        this.updateTypoControlRows();
+        const presetTarget = this.getActivePresetTarget();
+        if (presetTarget) {
+          presetTarget.contrast = !presetTarget.contrast;
+          this.updateTypoControlRows(presetTarget.kinetic, presetTarget.contrast);
+          this.renderStaticSetVaultUI();
+          this.renderAutoMatchVaultUI();
+        } else {
+          this.state.adaptiveContrast = !this.state.adaptiveContrast;
+          this.updateTypoControlRows();
+        }
         this.lockDownSilo();
       });
     }
@@ -1208,6 +1350,15 @@ const CloudyEngine = {
       const labels = this.getSizeLabels();
       let nextIndex = ((this.state.fontSizeIndex || 0) + 1) % labels.length;
       this.state.fontSizeIndex = nextIndex;
+
+      const presetTarget = this.getActivePresetTarget();
+      if (presetTarget) {
+        const matrix = this.state.sizeMatrix || [14, 17, 22];
+        presetTarget.size = nextIndex === 0 ? 0 : matrix[nextIndex - 1];
+        this.renderStaticSetVaultUI();
+        this.renderAutoMatchVaultUI();
+      }
+
       if (this.nodes.fontModeCycleBtn) {
         this.nodes.fontModeCycleBtn.textContent = labels[nextIndex];
         this.nodes.fontModeCycleBtn.classList.toggle("active-mode", nextIndex !== 0);
@@ -1329,6 +1480,14 @@ const CloudyEngine = {
     });
 
     this.nodes.ambientFullScreenBtn.addEventListener("click", () => {
+      const activeSlotWls = [];
+      this.nodes.kitchenSlots.forEach((btn) => {
+        if (btn.classList.contains("active")) {
+          const parsedWl = parseInt(btn.textContent, 10);
+          if (!isNaN(parsedWl)) activeSlotWls.push(parsedWl);
+        }
+      });
+
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs[0] && tabs[0].id) {
           const url = tabs[0].url || "";
@@ -1356,6 +1515,7 @@ const CloudyEngine = {
               kitchenWl: this.state.kitchenWl,
               kitchenTemp: this.state.kitchenTemp,
               kitchenRhythm: this.state.kitchenRhythm,
+              kitchenSlotWls: activeSlotWls,
               uiTheme: this.state.uiTheme,
             },
             () => {
@@ -1479,6 +1639,10 @@ const CloudyEngine = {
         } else {
           this.state.curatedThemeIndex = selectedIdx;
           this.highlightFontButtons(selectedIdx);
+          if (this.nodes.amDeckLightCard && this.nodes.amDeckDarkCard) {
+            this.nodes.amDeckLightCard.classList.remove("active-side");
+            this.nodes.amDeckDarkCard.classList.remove("active-side");
+          }
           if (prevIdx >= 21 || selectedIdx === 0) {
             this.state.fontSizeIndex = 0;
             if (this.nodes.fontModeCycleBtn) {
@@ -1486,6 +1650,7 @@ const CloudyEngine = {
               this.nodes.fontModeCycleBtn.classList.remove("active-mode");
             }
             this.applyUIThemeToDOM(this.state.previousUiTheme || "blue");
+            this.updateTypoControlRows();
           }
           this.lockDownSilo();
         }
@@ -1497,14 +1662,22 @@ const CloudyEngine = {
       });
 
       btn.addEventListener("mouseleave", () => {
-        this.setHUDText(this.originalDisclaimerText, false, false);
+        this.restoreDefaultHUD();
       });
     });
 
-    // Screen Tinting Controls
+    // Screen Tinting Controls (Syncs with Active Preset if Active)
     this.nodes.shieldSlider.addEventListener("input", (e) => {
-      this.state.shieldIntensity = parseInt(e.target.value, 10);
-      this.nodes.intensityDisplay.textContent = this.state.shieldIntensity + "%";
+      const val = parseInt(e.target.value, 10);
+      this.nodes.intensityDisplay.textContent = val + "%";
+      const presetTarget = this.getActivePresetTarget();
+      if (presetTarget) {
+        presetTarget.tintIntensity = val;
+        this.renderStaticSetVaultUI();
+        this.renderAutoMatchVaultUI();
+      } else {
+        this.state.shieldIntensity = val;
+      }
       this.lockDownSilo();
     });
 
@@ -1512,17 +1685,28 @@ const CloudyEngine = {
       if (btn.classList.contains("theme-btn") || btn.classList.contains("override-btn")) return;
       btn.addEventListener("click", (e) => {
         const clickedTint = e.currentTarget.getAttribute("data-tint");
-        if (this.state.selectedTint === clickedTint && e.currentTarget.classList.contains("active")) {
-          e.currentTarget.classList.remove("active");
-          this.state.selectedTint = "off";
-        } else {
-          this.nodes.tintBtns.forEach((b) => {
-            if (!b.classList.contains("theme-btn") && !b.classList.contains("override-btn")) {
-              b.classList.remove("active");
-            }
-          });
+        const isCurrentlyActive = e.currentTarget.classList.contains("active");
+        const nextTint = isCurrentlyActive ? "off" : clickedTint;
+
+        this.nodes.tintBtns.forEach((b) => {
+          if (!b.classList.contains("theme-btn") && !b.classList.contains("override-btn")) {
+            b.classList.remove("active");
+          }
+        });
+        if (nextTint !== "off") {
           e.currentTarget.classList.add("active");
-          this.state.selectedTint = clickedTint;
+        }
+
+        const presetTarget = this.getActivePresetTarget();
+        if (presetTarget) {
+          presetTarget.tint = nextTint;
+          if (nextTint !== "off" && !presetTarget.tintIntensity) {
+            presetTarget.tintIntensity = parseInt(this.nodes.shieldSlider.value, 10) || 20;
+          }
+          this.renderStaticSetVaultUI();
+          this.renderAutoMatchVaultUI();
+        } else {
+          this.state.selectedTint = nextTint;
         }
         this.lockDownSilo();
       });
@@ -1551,6 +1735,15 @@ const CloudyEngine = {
           }
         }
         this.lockDownSilo();
+        if (
+          tileId === "dark-bg" &&
+          (this.state.curatedThemeIndex === 23 || this.state.curatedThemeIndex === 24)
+        ) {
+          const amNum = this.state.curatedThemeIndex - 22;
+          setTimeout(() => {
+            this.syncAutoMatchReadoutWithActiveTab(this.state["autoMatch" + amNum]);
+          }, 80);
+        }
       });
     });
 
@@ -1639,6 +1832,8 @@ const CloudyEngine = {
           this.updateDeckCustomButtons();
           this.updateTypoControlRows();
           this.updateNotesCounter("");
+          this.renderNotesHudBtn();
+          this.restoreDefaultHUD();
           return;
         }
 
@@ -1646,7 +1841,7 @@ const CloudyEngine = {
         this.state = Object.assign(this.state, saved);
 
         if (!saved.rosterVersion || saved.rosterVersion < 9) {
-          this.state.rosterVersion = 10;
+          this.state.rosterVersion = 11;
           this.state.uiTheme = "blue";
           this.state.previousUiTheme = "blue";
           this.state.static1 = JSON.parse(JSON.stringify(DEFAULT_STATIC_SETS.static1));
@@ -1659,43 +1854,79 @@ const CloudyEngine = {
           this.state.previousUiTheme || this.state.uiTheme || "blue"
         );
 
+        // Hydrate Notes Scratchpad & HUD Pin State
+        const savedNotes = (this.state.userNotes || "").substring(0, MAX_NOTES_CHARS);
+        this.state.userNotes = savedNotes;
+        this.state.notesInHud = !!this.state.notesInHud;
+        if (this.nodes.cloudyNotesArea) {
+          this.nodes.cloudyNotesArea.value = savedNotes;
+        }
+        this.updateNotesCounter(savedNotes);
+        this.renderNotesHudBtn();
+        this.restoreDefaultHUD();
+
+        // Hydrate Light Kitchen Sliders
+        if (this.nodes.ksWavelength && this.state.kitchenWl) {
+          this.nodes.ksWavelength.value = String(this.state.kitchenWl);
+          this.nodes.ksWlBadge.textContent = String(this.state.kitchenWl);
+          this.nodes.kReadoutWl.textContent = this.state.kitchenWl + " nm";
+        }
+        if (this.nodes.ksColorTemp && this.state.kitchenTemp) {
+          this.nodes.ksColorTemp.value = String(this.state.kitchenTemp);
+          this.nodes.ksTempBadge.textContent = String(this.state.kitchenTemp);
+          this.nodes.kReadoutTemp.textContent = this.state.kitchenTemp + " K";
+        }
+        if (this.nodes.ksRhythm && this.state.kitchenRhythm) {
+          this.nodes.ksRhythm.value = String(this.state.kitchenRhythm);
+          this.nodes.ksRhythmBadge.textContent = String(this.state.kitchenRhythm);
+        }
+
+        this.state.sizeMatrix = this.state.sizeMatrix || [14, 17, 22];
+        if (this.nodes.fontDropdowns && this.nodes.fontDropdowns.length === 3) {
+          this.nodes.fontDropdowns[0].value = String(this.state.sizeMatrix[0]);
+          this.nodes.fontDropdowns[1].value = String(this.state.sizeMatrix[1]);
+          this.nodes.fontDropdowns[2].value = String(this.state.sizeMatrix[2]);
+        }
+
+        this.state.fontSizeIndex = this.state.fontSizeIndex || 0;
+        const sizeLabels = this.getSizeLabels();
+        if (this.nodes.fontModeCycleBtn) {
+          this.nodes.fontModeCycleBtn.textContent = sizeLabels[this.state.fontSizeIndex] || "aA";
+          this.nodes.fontModeCycleBtn.classList.toggle("active-mode", this.state.fontSizeIndex !== 0);
+        }
+
+        this.state.adaptiveContrast = this.state.adaptiveContrast || false;
+        this.state.kineticFocus = this.state.kineticFocus || false;
+        this.updateTypoControlRows();
+
+        this.nodes.shieldSlider.value = this.state.shieldIntensity;
+        this.nodes.intensityDisplay.textContent = this.state.shieldIntensity + "%";
+
+        this.nodes.tintBtns.forEach((btn) => {
+          if (btn.classList.contains("theme-btn") || btn.classList.contains("override-btn")) return;
+          btn.classList.toggle("active", btn.getAttribute("data-tint") === this.state.selectedTint);
+        });
+
         let loadedIndex = this.state.curatedThemeIndex || 0;
         if (loadedIndex > 24) loadedIndex = 23;
         this.state.curatedThemeIndex = loadedIndex;
 
         if (loadedIndex === 21 || loadedIndex === 22) {
           const stData = this.state["static" + (loadedIndex - 20)];
-          if (stData && stData.theme > 0) {
-            this.state.uiTheme = THEME_ID_MAP[stData.theme] || "blue";
+          if (stData) {
+            this.syncMainDeckIndicatorsFromLoadout(stData, stData.theme || 0);
           }
         } else if (loadedIndex === 23 || loadedIndex === 24) {
           const amNum = loadedIndex - 22;
           this.state.activeDeckAutoMatch = amNum;
           const amData = this.state["autoMatch" + amNum];
-          if (amData && amData.theme > 0) {
-            this.state.uiTheme = THEME_ID_MAP[amData.theme] || "blue";
-          }
           if (amData) {
             this.syncAutoMatchReadoutWithActiveTab(amData);
           }
         } else {
           this.state.uiTheme = this.normalizeThemeId(this.state.uiTheme);
+          this.applyUIThemeToDOM(this.state.uiTheme);
         }
-
-        this.applyUIThemeToDOM(this.state.uiTheme);
-
-        // Hydrate Notes Scratchpad
-        const savedNotes = (this.state.userNotes || "").substring(0, MAX_NOTES_CHARS);
-        this.state.userNotes = savedNotes;
-        if (this.nodes.cloudyNotesArea) {
-          this.nodes.cloudyNotesArea.value = savedNotes;
-        }
-        this.updateNotesCounter(savedNotes);
-
-        chrome.storage.local.set({ CloudyReader_ActiveManifest: this.state });
-
-        this.nodes.shieldSlider.value = this.state.shieldIntensity;
-        this.nodes.intensityDisplay.textContent = this.state.shieldIntensity + "%";
 
         this.renderStaticSetVaultUI();
         this.renderAutoMatchVaultUI();
@@ -1727,29 +1958,6 @@ const CloudyEngine = {
             }
           }
         }
-
-        this.state.sizeMatrix = this.state.sizeMatrix || [14, 17, 22];
-        if (this.nodes.fontDropdowns && this.nodes.fontDropdowns.length === 3) {
-          this.nodes.fontDropdowns[0].value = String(this.state.sizeMatrix[0]);
-          this.nodes.fontDropdowns[1].value = String(this.state.sizeMatrix[1]);
-          this.nodes.fontDropdowns[2].value = String(this.state.sizeMatrix[2]);
-        }
-
-        this.state.fontSizeIndex = this.state.fontSizeIndex || 0;
-        const sizeLabels = this.getSizeLabels();
-        if (this.nodes.fontModeCycleBtn) {
-          this.nodes.fontModeCycleBtn.textContent = sizeLabels[this.state.fontSizeIndex] || "aA";
-          this.nodes.fontModeCycleBtn.classList.toggle("active-mode", this.state.fontSizeIndex !== 0);
-        }
-
-        this.state.adaptiveContrast = this.state.adaptiveContrast || false;
-        this.state.kineticFocus = this.state.kineticFocus || false;
-        this.updateTypoControlRows();
-
-        this.nodes.tintBtns.forEach((btn) => {
-          if (btn.classList.contains("theme-btn") || btn.classList.contains("override-btn")) return;
-          btn.classList.toggle("active", btn.getAttribute("data-tint") === this.state.selectedTint);
-        });
 
         this.nodes.sensoryRows.forEach((row) => {
           const id = row.getAttribute("data-tile-id");

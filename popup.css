@@ -126,11 +126,11 @@ body.expanded-lamp {
 }
 
 /* ==========================================================================
-   2-COLUMN ADOBE SPECTRUM WORKSPACE & THIN THEME-COLORED SCROLLBAR
+   2-COLUMN ADOBE SPECTRUM WORKSPACE (346px Left / 214px Right)
    ========================================================================== */
 .adobe-workspace {
   display: grid;
-  grid-template-columns: 326px 234px;
+  grid-template-columns: 346px 214px;
   flex: 1;
   height: 100%;
   min-height: 0;
@@ -173,14 +173,14 @@ body.expanded-lamp {
 }
 
 .right-panel-block {
-  padding: 7px 12px;
+  padding: 6px 10px;
   border-bottom: 1px solid var(--bg-border);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
 }
 
-/* Collapsible Accordion Sections */
+/* Collapsible Accordion Sections (Refined Adobe Hierarchy) */
 .accordion-section {
   border-bottom: 1px solid var(--bg-border);
   display: flex;
@@ -191,7 +191,7 @@ body.expanded-lamp {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
+  padding: 7px 11px;
   background-color: rgba(255, 255, 255, 0.02);
   cursor: pointer;
   user-select: none;
@@ -206,14 +206,18 @@ body.expanded-lamp {
   gap: 6px;
 }
 .acc-arrow {
-  font-size: 0.72rem;
+  font-size: 0.64rem;
   color: var(--text-muted);
-  width: 10px;
+  width: 9px;
   display: inline-block;
+}
+.accordion-header .panel-label {
+  font-size: 0.56rem;
+  letter-spacing: 1.1px;
 }
 .accordion-body {
   display: none;
-  padding: 6px 12px 10px 12px;
+  padding: 6px 11px 9px 11px;
 }
 .accordion-section.open > .accordion-body {
   display: block;
@@ -231,7 +235,7 @@ body.expanded-lamp {
   justify-content: flex-start;
   gap: 7px;
   padding: 6px 8px !important;
-  font-size: 0.64rem !important;
+  font-size: 0.62rem !important;
   color: #e2e0dc !important;
 }
 .lamp-dot {
@@ -242,7 +246,7 @@ body.expanded-lamp {
 }
 
 /* ==========================================================================
-   NOTES ACCORDION SCRATCHPAD (440-Character Limit + Notepad Status Bar)
+   NOTES ACCORDION SCRATCHPAD (2,000-Char Limit + Display in HUD Button)
    ========================================================================== */
 .notes-pad-container {
   background-color: var(--bg-tile);
@@ -260,7 +264,7 @@ body.expanded-lamp {
   border: none;
   color: #e2e0dc;
   font-family: "Ubuntu Sans Mono", "Cascadia Mono", monospace;
-  font-size: 0.64rem;
+  font-size: 0.62rem;
   line-height: 1.45;
   padding: 8px 10px;
   resize: none;
@@ -274,44 +278,101 @@ body.expanded-lamp {
 .notes-status-bar {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 4px 10px;
+  justify-content: space-between;
+  padding: 4px 8px;
   background-color: var(--bg-main);
   border-top: 1px solid var(--bg-border);
   font-family: "Ubuntu Sans Mono", monospace;
-  font-size: 0.54rem;
+  font-size: 0.52rem;
   font-weight: 700;
   color: var(--text-muted);
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
   user-select: none;
+}
+.notes-hud-btn {
+  background-color: transparent;
+  border: 1px solid var(--bg-border);
+  border-radius: 3px;
+  padding: 2px 7px;
+  font-size: 0.52rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  opacity: 0.75;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.notes-hud-btn:hover:not(.active) {
+  opacity: 1;
+  border-color: var(--text-muted);
+  color: #d4d4d8;
+}
+.notes-hud-btn.active {
+  opacity: 1;
+  background-color: var(--app-accent);
+  border-color: var(--app-accent);
+  color: #d4d4d8;
+  font-weight: 700;
 }
 
 /* ==========================================================================
-   CUSTOMIZATION MENU STACK
+   CUSTOMIZATION MENU STACK (Uncramped Layout & Non-Spilling Buttons)
    ========================================================================== */
 .customization-stack {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 .cust-block {
   background-color: var(--bg-tile);
   border: 1px solid var(--bg-border);
   border-radius: 4px;
-  padding: 5px 8px;
+  padding: 5px 7px;
   display: flex;
   flex-direction: column;
 }
+.cust-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  margin-bottom: 4px;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+.cust-title-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.cust-sec-title {
+  font-size: 0.54rem;
+  font-weight: 800;
+  color: #e2e0dc;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.cust-icon-btn {
+  font-size: 0.72rem !important;
+  font-weight: 800 !important;
+  color: var(--app-accent);
+  padding: 2px 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 21px;
+}
 .cust-row-1 {
   display: grid;
-  grid-template-columns: 26px 1.15fr 0.75fr 1.15fr;
+  grid-template-columns: 24px 1.15fr 0.72fr 1.12fr;
   gap: 4px;
   margin-bottom: 4px;
   width: 100%;
 }
 .cust-row-2 {
   display: grid;
-  grid-template-columns: 26px 26px 0.95fr 1.35fr;
+  grid-template-columns: 24px 24px 0.95fr 1.35fr;
   gap: 4px;
   width: 100%;
 }
@@ -351,9 +412,9 @@ body.expanded-lamp {
 }
 .panel-label {
   color: var(--text-muted);
-  font-size: 0.62rem;
+  font-size: 0.56rem;
   font-weight: 700;
-  letter-spacing: 0.7px;
+  letter-spacing: 0.9px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -364,36 +425,14 @@ body.expanded-lamp {
   align-items: center;
 }
 
-.menu-trigger {
-  width: 22px;
-  height: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.05rem;
-  font-weight: 700;
-  line-height: 1;
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--text-muted);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-.menu-trigger:hover {
-  color: #fff;
-  border-color: var(--text-muted);
-  background: var(--bg-tile);
-}
-
 /* ==========================================================================
-   FULL-HEIGHT RIGHT-COLUMN HUD INSPECTOR (Claims All Empty Gap Below Tinting)
+   FULL-HEIGHT RIGHT-COLUMN HUD INSPECTOR (Full Width, No Unused 3-Dot Button)
    ========================================================================== */
 .disclaimer.right-hud {
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   color: var(--text-muted);
   text-align: left;
-  padding: 8px 12px;
+  padding: 8px 10px;
   flex: 1;
   min-height: 0;
   background-color: var(--bg-tile);
@@ -405,13 +444,13 @@ body.expanded-lamp {
 }
 .disclaimer.active-tooltip {
   color: #e2e0dc;
-  font-size: 0.63rem;
+  font-size: 0.61rem;
   font-weight: 400;
   border-top: 1px solid var(--app-accent);
 }
 .hud-header {
   display: block;
-  font-size: 0.63rem;
+  font-size: 0.61rem;
   font-weight: 800;
   letter-spacing: 0.4px;
   margin-bottom: 3px;
@@ -427,10 +466,12 @@ body.expanded-lamp {
   font-weight: 400;
   color: #e2e0dc;
   line-height: 1.38;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 .marquee-container {
   height: 100%;
-  max-height: 96px;
+  max-height: 102px;
   width: 100%;
   overflow: hidden;
   position: relative;
@@ -458,7 +499,7 @@ body.expanded-lamp {
 }
 .disclaimer.active-tooltip .marquee-content.scroll-lore {
   animation: scroll-lore-vertical 20s ease-in-out infinite !important;
-  padding-right: 10px;
+  padding-right: 8px;
 }
 
 .disclaimer.active-tooltip .marquee-container:has(.scroll-lore)::before {
@@ -545,7 +586,7 @@ body.expanded-lamp {
 .slider-container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   padding: 2px 0;
 }
 input[type="range"] {
@@ -576,31 +617,31 @@ input[type="range"]:hover::-webkit-slider-thumb {
   background-color: var(--bg-tile);
   border: 1px solid var(--bg-border);
   color: #e2e0dc;
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 700;
-  padding: 2px 6px;
+  padding: 2px 5px;
   border-radius: 3px;
-  min-width: 36px;
+  min-width: 34px;
   text-align: center;
 }
 
 /* ==========================================================================
-   CUSTOMIZATION INPUTS & SELECTORS
+   CUSTOMIZATION INPUTS & SELECTORS (Compact & Non-Wrapping)
    ========================================================================== */
 .custom-name-input {
-  width: 120px;
-  height: 21px;
+  height: 20px;
   background-color: var(--bg-main);
   border: 1px solid var(--bg-border);
   color: #e2e0dc;
-  font-size: 0.56rem;
+  font-size: 0.52rem;
   font-weight: 700;
-  padding: 2px 5px;
-  border-radius: 4px;
+  padding: 1px 5px;
+  border-radius: 3px;
   outline: none;
   text-align: center;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
   transition: border-color 0.15s ease;
+  flex-shrink: 0;
 }
 .custom-name-input::placeholder {
   color: var(--text-muted);
@@ -615,12 +656,13 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .vault-select {
   appearance: none;
   text-align: center;
-  font-size: 0.56rem !important;
+  font-size: 0.52rem !important;
   background-color: var(--bg-main);
   border: 1px solid var(--bg-border);
   color: var(--text-muted);
-  padding: 4px 2px !important;
-  border-radius: 4px;
+  padding: 2px 2px !important;
+  height: 21px;
+  border-radius: 3px;
   cursor: pointer;
   outline: none;
   white-space: nowrap;
@@ -631,8 +673,9 @@ input[type="range"]:hover::-webkit-slider-thumb {
 
 .vault-btn-ellipsis {
   background-color: var(--bg-main);
-  font-size: 0.56rem !important;
-  padding: 4px 3px !important;
+  font-size: 0.52rem !important;
+  padding: 2px 3px !important;
+  height: 21px;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -641,12 +684,18 @@ input[type="range"]:hover::-webkit-slider-thumb {
 }
 
 .am-side-toggle {
-  height: 21px;
-  padding: 0 7px;
-  border-radius: 4px;
-  font-size: 0.53rem;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 3px;
+  font-size: 0.5rem;
   font-weight: 800;
   letter-spacing: 0.3px;
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: all 0.15s ease;
   background-color: var(--bg-main);
@@ -664,9 +713,9 @@ input[type="range"]:hover::-webkit-slider-thumb {
   gap: 4px;
   background-color: var(--bg-main);
   border: 1px solid var(--bg-border);
-  border-radius: 4px;
+  border-radius: 3px;
   padding: 0 5px;
-  height: 100%;
+  height: 21px;
   min-width: 0;
 }
 .custom-tint-gauge.active {
@@ -677,18 +726,18 @@ input[type="range"]:hover::-webkit-slider-thumb {
   height: 4px;
 }
 .custom-tint-gauge input[type="range"]::-webkit-slider-thumb {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
 }
 .custom-tint-gauge.active input[type="range"]::-webkit-slider-thumb {
   background: var(--app-accent);
   border-color: #fff;
 }
 .custom-tint-val {
-  font-size: 0.54rem;
+  font-size: 0.5rem;
   font-weight: 800;
   color: #e2e0dc;
-  min-width: 24px;
+  min-width: 22px;
   text-align: right;
   user-select: none;
 }
@@ -696,7 +745,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .tint-preset-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
+  gap: 4px;
 }
 .tint-btn,
 .override-btn {
@@ -704,15 +753,15 @@ input[type="range"]:hover::-webkit-slider-thumb {
   border: 1px solid var(--bg-border);
   color: var(--text-muted);
   padding: 3px 4px;
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 600;
   cursor: pointer;
   border-radius: 4px;
   transition: all 0.1s ease;
 }
 .override-btn {
-  padding: 4px 4px;
-  letter-spacing: 0.3px;
+  padding: 3px 4px;
+  letter-spacing: 0.2px;
 }
 
 /* ==========================================================================
@@ -805,11 +854,11 @@ input[type="range"]:hover::-webkit-slider-thumb {
   transition: all 0.1s ease;
 }
 
-/* Custom Tab 3-Part Layout: Static (Left) | 3-Dot Pillar | Auto-Match (Right) */
+/* Custom Tab 3-Part Layout: Static (Left) | 8 Frameless Vertical Dots | Auto-Match (Right) */
 .custom-deck-split {
   display: grid;
-  grid-template-columns: 1fr 14px 1.1fr;
-  gap: 5px;
+  grid-template-columns: 1fr 12px 1.1fr;
+  gap: 4px;
   width: 100%;
   align-items: stretch;
 }
@@ -865,11 +914,10 @@ input[type="range"]:hover::-webkit-slider-thumb {
   margin-top: auto;
 }
 
-/* Clean 3-Dot Divider Pillar */
+/* Frameless Centered 8-Dot Vertical Divider */
 .tactical-divider {
-  background: var(--bg-main);
-  border: 1px solid var(--bg-border);
-  border-radius: 4px;
+  background: transparent;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -877,13 +925,15 @@ input[type="range"]:hover::-webkit-slider-thumb {
 }
 .tactical-dots {
   writing-mode: vertical-rl;
-  font-size: 0.54rem;
+  font-size: 0.5rem;
   color: var(--text-muted);
-  letter-spacing: 2px;
+  letter-spacing: 2.5px;
   line-height: 1;
+  text-align: center;
+  opacity: 0.75;
 }
 
-/* Auto-Match: Outer Wireframe & Center Swap Icon Illumination Only */
+/* Auto-Match: Outer Wireframe, Active Tab Side Highlight, & Center Swap Icon */
 .am-deck-header {
   display: flex;
   align-items: center;
@@ -918,6 +968,10 @@ input[type="range"]:hover::-webkit-slider-thumb {
   align-items: flex-start;
   z-index: 2;
   text-align: left;
+  transition: border-color 0.15s ease;
+}
+.auto-match-container.active .am-card.active-side {
+  border-color: var(--app-accent);
 }
 .am-card:first-child {
   margin-bottom: -4px;
@@ -967,7 +1021,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .sensory-list {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 .sensory-row {
   display: flex;
@@ -979,15 +1033,15 @@ input[type="range"]:hover::-webkit-slider-thumb {
   cursor: pointer;
 }
 .sensory-name {
-  font-size: 0.66rem;
+  font-size: 0.64rem;
   font-weight: 500;
   color: #d4d4d8;
   user-select: none;
 }
 .hz-inline-readout {
-  font-size: 0.52rem;
+  font-size: 0.5rem;
   color: var(--text-muted);
-  margin-left: 4px;
+  margin-left: 3px;
   font-weight: 800;
 }
 
@@ -1021,8 +1075,8 @@ input[type="range"]:hover::-webkit-slider-thumb {
   background-color: var(--bg-tile);
   border: 1px solid var(--bg-border);
   border-radius: 3px;
-  color: #e2e0dc;
-  font-size: 0.58rem;
+  color: var(--text-muted);
+  font-size: 0.56rem;
   font-weight: 800;
   display: flex;
   align-items: center;
@@ -1439,13 +1493,13 @@ html.expanded-lamp #ambientFullScreenBtn {
   margin: 6px 0;
 }
 .cycle-arrows {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
 }
 .cycle-arrow {
   color: var(--text-muted);
-  font-size: 0.68rem;
+  font-size: 0.58rem;
   cursor: pointer;
   user-select: none;
   display: inline-block;
