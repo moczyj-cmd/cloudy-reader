@@ -1,0 +1,32 @@
+/* ==========================================================================
+   Cloudy Reader ☁️ Content Injection Styles (Live Page Overlay)
+   ========================================================================= */
+
+.cloudy-master-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none; /* Allows clicking through the overlay */
+    z-index: 2147483647;  /* Maximum possible z-index to cover everything */
+    transition: background-color 0.3s ease-in-out;
+}
+
+/* Twilight App Match: Pure Red pushing through Multiply blending */
+.cloudy-tint-red {
+    background-color: rgba(255, 0, 0, 0.45);
+    mix-blend-mode: multiply;
+}
+
+/* Android Night Light Match: Deep Warm Amber */
+.cloudy-tint-amber {
+    background-color: rgba(255, 179, 0, 0.30);
+    mix-blend-mode: multiply;
+}
+
+/* Blackout Dimmer: Pure darkness layered over the screen */
+.cloudy-tint-blackout {
+    background-color: rgba(10, 10, 10, 0.65);
+    mix-blend-mode: normal; /* Normal blend purely drops exposure */
+}

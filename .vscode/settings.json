@@ -1,0 +1,33 @@
+{
+  // ==========================================
+  // PYTHON & PYLANCE (SOC Analyst Configuration)
+  // ==========================================
+  "python.languageServer": "Pylance",
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.inlayHints.variableTypes": true,
+  "python.analysis.inlayHints.functionReturnTypes": true,
+
+  // ==========================================
+  // GLOBAL EDITOR ENFORCEMENT
+  // ==========================================
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // ==========================================
+  // PRETTIER (UI Formatting)
+  // ==========================================
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // Force specific languages to use Prettier to avoid conflicts
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

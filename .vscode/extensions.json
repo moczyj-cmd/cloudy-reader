@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    // Python & Pylance
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+
+    // Linting & Formatting
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
+  ]
+}

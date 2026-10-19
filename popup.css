@@ -1,0 +1,1457 @@
+/* ==========================================================================
+   Cloudy Reader ☁️ Unified Stylesheet (2-Column Spectrum Inspector Architecture)
+   ========================================================================= */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@200..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,600;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@300..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,300..700;1,7..72,300..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..700;1,300..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu+Sans:ital,wght@0,300..700;1,300..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu+Sans+Mono:ital,wght@0,400..700;1,400..700&display=swap");
+@import url("https://fonts.cdnfonts.com/css/opendyslexic");
+
+/* ==========================================================================
+   THEME DEFINITIONS (Default OOB: Blue, plus Studio Pro, Green, Purple, Dark, Orange)
+   ========================================================================== */
+:root,
+:root[data-ui-theme="blue"] {
+  --bg-main: #252526;
+  --bg-tile: #1b1b1c;
+  --bg-border: #38383a;
+  --text-muted: #9e9ea6;
+  --app-accent: #2680eb;
+  --font-global-ui: "Noto Sans", system-ui, sans-serif;
+}
+
+:root[data-ui-theme="studio-pro"] {
+  --bg-main: #2b2b2b;
+  --bg-tile: #1e1e1e;
+  --bg-border: #3c3c3c;
+  --text-muted: #a8a8a8;
+  --app-accent: #e61919;
+  --font-global-ui: "Noto Sans", system-ui, sans-serif;
+}
+
+:root[data-ui-theme="green"],
+:root[data-ui-theme="emerald"] {
+  --bg-main: #1e1f1e;
+  --bg-tile: #141514;
+  --bg-border: #333634;
+  --text-muted: #949996;
+  --app-accent: #10b981;
+  --font-global-ui: "Outfit", system-ui, sans-serif;
+}
+
+:root[data-ui-theme="purple"],
+:root[data-ui-theme="amethyst"] {
+  --bg-main: #1f1e22;
+  --bg-tile: #141316;
+  --bg-border: #35333b;
+  --text-muted: #9894a1;
+  --app-accent: #8b5cf6;
+  --font-global-ui: "Outfit", system-ui, sans-serif;
+}
+
+:root[data-ui-theme="dark"] {
+  --bg-main: #181a1f;
+  --bg-tile: #101216;
+  --bg-border: #2c313a;
+  --text-muted: #94a3b8;
+  --app-accent: #64748b;
+  --font-global-ui: "Noto Sans", system-ui, sans-serif;
+}
+
+:root[data-ui-theme="orange"],
+:root[data-ui-theme="papaya"] {
+  --bg-main: #211f1e;
+  --bg-tile: #151413;
+  --bg-border: #383431;
+  --text-muted: #9c9590;
+  --app-accent: #ff6b00;
+  --font-global-ui: "Outfit", system-ui, sans-serif;
+}
+
+:root {
+  --glt-525: #00ff00;
+  --glt-545: #7cff00;
+  --blt-460: #0047ff;
+  --blt-480: #00bfff;
+  --pbm-660: #ff0000;
+  --gh-2700: #ffa657;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-global-ui);
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+html,
+body {
+  width: 560px;
+  min-width: 560px;
+  height: 460px;
+  overflow: hidden !important;
+  background-color: var(--bg-main);
+  transition:
+    width 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+    min-width 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+html.expanded-lamp,
+body.expanded-lamp {
+  width: 760px;
+  min-width: 760px;
+}
+.app-container {
+  background-color: var(--bg-main);
+  color: #ffffff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   2-COLUMN ADOBE SPECTRUM WORKSPACE & THIN THEME-COLORED SCROLLBAR
+   ========================================================================== */
+.adobe-workspace {
+  display: grid;
+  grid-template-columns: 326px 234px;
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}
+
+.workspace-left {
+  border-right: 1px solid var(--bg-border);
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Thin Theme-Colored Scrollbar for Left Accordion Stack & Notes Pad */
+.workspace-left::-webkit-scrollbar,
+.cloudy-notes-textarea::-webkit-scrollbar {
+  width: 3px;
+}
+.workspace-left::-webkit-scrollbar-track,
+.cloudy-notes-textarea::-webkit-scrollbar-track {
+  background: var(--bg-tile);
+  border-radius: 2px;
+}
+.workspace-left::-webkit-scrollbar-thumb,
+.cloudy-notes-textarea::-webkit-scrollbar-thumb {
+  background: var(--app-accent);
+  border-radius: 2px;
+}
+
+.workspace-right {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-main);
+  overflow: hidden;
+}
+
+.right-panel-block {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--bg-border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+/* Collapsible Accordion Sections */
+.accordion-section {
+  border-bottom: 1px solid var(--bg-border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background-color: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease;
+}
+.accordion-header:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.accordion-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.acc-arrow {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  width: 10px;
+  display: inline-block;
+}
+.accordion-body {
+  display: none;
+  padding: 6px 12px 10px 12px;
+}
+.accordion-section.open > .accordion-body {
+  display: block;
+}
+
+/* Atmosphere Lamp Accordion Drawer */
+.lamp-accordion-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+.lamp-quick-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 7px;
+  padding: 6px 8px !important;
+  font-size: 0.64rem !important;
+  color: #e2e0dc !important;
+}
+.lamp-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   NOTES ACCORDION SCRATCHPAD (440-Character Limit + Notepad Status Bar)
+   ========================================================================== */
+.notes-pad-container {
+  background-color: var(--bg-tile);
+  border: 1px solid var(--bg-border);
+  border-left: 3px solid var(--app-accent);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.cloudy-notes-textarea {
+  width: 100%;
+  height: 155px;
+  background-color: transparent;
+  border: none;
+  color: #e2e0dc;
+  font-family: "Ubuntu Sans Mono", "Cascadia Mono", monospace;
+  font-size: 0.64rem;
+  line-height: 1.45;
+  padding: 8px 10px;
+  resize: none;
+  outline: none;
+  overflow-y: auto;
+}
+.cloudy-notes-textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.55;
+}
+.notes-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 4px 10px;
+  background-color: var(--bg-main);
+  border-top: 1px solid var(--bg-border);
+  font-family: "Ubuntu Sans Mono", monospace;
+  font-size: 0.54rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.4px;
+  user-select: none;
+}
+
+/* ==========================================================================
+   CUSTOMIZATION MENU STACK
+   ========================================================================== */
+.customization-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cust-block {
+  background-color: var(--bg-tile);
+  border: 1px solid var(--bg-border);
+  border-radius: 4px;
+  padding: 5px 8px;
+  display: flex;
+  flex-direction: column;
+}
+.cust-row-1 {
+  display: grid;
+  grid-template-columns: 26px 1.15fr 0.75fr 1.15fr;
+  gap: 4px;
+  margin-bottom: 4px;
+  width: 100%;
+}
+.cust-row-2 {
+  display: grid;
+  grid-template-columns: 26px 26px 0.95fr 1.35fr;
+  gap: 4px;
+  width: 100%;
+}
+.cust-row-1 > *,
+.cust-row-2 > * {
+  min-width: 0;
+}
+
+/* ==========================================================================
+   HEADER & GENERAL CONTROLS
+   ========================================================================== */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: var(--bg-tile);
+  height: 38px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--bg-border);
+}
+.header-title {
+  color: #e2e0dc;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  cursor: default;
+  white-space: nowrap;
+}
+
+.control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.panel-label {
+  color: var(--text-muted);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.shield-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-trigger {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.menu-trigger:hover {
+  color: #fff;
+  border-color: var(--text-muted);
+  background: var(--bg-tile);
+}
+
+/* ==========================================================================
+   FULL-HEIGHT RIGHT-COLUMN HUD INSPECTOR (Claims All Empty Gap Below Tinting)
+   ========================================================================== */
+.disclaimer.right-hud {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 8px 12px;
+  flex: 1;
+  min-height: 0;
+  background-color: var(--bg-tile);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  overflow: hidden;
+}
+.disclaimer.active-tooltip {
+  color: #e2e0dc;
+  font-size: 0.63rem;
+  font-weight: 400;
+  border-top: 1px solid var(--app-accent);
+}
+.hud-header {
+  display: block;
+  font-size: 0.63rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  margin-bottom: 3px;
+  color: #e2e0dc;
+}
+.hud-font-name {
+  font-weight: 800;
+  color: var(--app-accent);
+}
+.hud-lore {
+  display: block;
+  font-style: italic;
+  font-weight: 400;
+  color: #e2e0dc;
+  line-height: 1.38;
+}
+.marquee-container {
+  height: 100%;
+  max-height: 96px;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+}
+.marquee-content {
+  display: block;
+  width: 100%;
+  white-space: normal;
+  text-align: left;
+  line-height: 1.4;
+  animation: scroll-text-vertical 20s linear infinite;
+}
+.disclaimer.active-tooltip .marquee-container {
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+.disclaimer.active-tooltip .marquee-content.no-scroll {
+  animation: none !important;
+  transform: translateY(0) !important;
+  overflow-y: hidden;
+  height: 100%;
+  padding-right: 4px;
+}
+.disclaimer.active-tooltip .marquee-content.scroll-lore {
+  animation: scroll-lore-vertical 20s ease-in-out infinite !important;
+  padding-right: 10px;
+}
+
+.disclaimer.active-tooltip .marquee-container:has(.scroll-lore)::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  width: 3px;
+  height: calc(100% - 4px);
+  background: var(--bg-border);
+  border-radius: 2px;
+  z-index: 5;
+}
+
+.disclaimer.active-tooltip .marquee-container:has(.scroll-lore)::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  width: 3px;
+  height: 26px;
+  background: var(--app-accent);
+  border-radius: 2px;
+  z-index: 6;
+  animation: scroll-lore-thumb 20s ease-in-out infinite !important;
+}
+
+@keyframes scroll-lore-vertical {
+  0%,
+  15% {
+    transform: translateY(0);
+  }
+  80%,
+  92% {
+    transform: translateY(calc(-100% + 84px));
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes scroll-lore-thumb {
+  0%,
+  15% {
+    transform: translateY(0);
+  }
+  80%,
+  92% {
+    transform: translateY(62px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes scroll-text-vertical {
+  0%,
+  15% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  80%,
+  90% {
+    transform: translateY(calc(-100% + 84px));
+    opacity: 1;
+  }
+  95% {
+    transform: translateY(calc(-100% + 84px));
+    opacity: 0;
+  }
+  96% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   ADOBE SCRUBBER SLIDER & NUMERIC PILL READOUT BOX
+   ========================================================================== */
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+}
+input[type="range"] {
+  flex: 1;
+  appearance: none;
+  background: var(--bg-tile);
+  height: 4px;
+  outline: none;
+  border-radius: 2px;
+  border: 1px solid var(--bg-border);
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg-main);
+  border: 2px solid var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+input[type="range"]:hover::-webkit-slider-thumb {
+  border-color: #fff;
+  background: var(--app-accent);
+}
+.adobe-num-box {
+  background-color: var(--bg-tile);
+  border: 1px solid var(--bg-border);
+  color: #e2e0dc;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  min-width: 36px;
+  text-align: center;
+}
+
+/* ==========================================================================
+   CUSTOMIZATION INPUTS & SELECTORS
+   ========================================================================== */
+.custom-name-input {
+  width: 120px;
+  height: 21px;
+  background-color: var(--bg-main);
+  border: 1px solid var(--bg-border);
+  color: #e2e0dc;
+  font-size: 0.56rem;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 4px;
+  outline: none;
+  text-align: center;
+  letter-spacing: 0.3px;
+  transition: border-color 0.15s ease;
+}
+.custom-name-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+  font-weight: 500;
+}
+.custom-name-input:focus,
+.custom-name-input.has-label {
+  border-color: var(--app-accent);
+}
+
+.vault-select {
+  appearance: none;
+  text-align: center;
+  font-size: 0.56rem !important;
+  background-color: var(--bg-main);
+  border: 1px solid var(--bg-border);
+  color: var(--text-muted);
+  padding: 4px 2px !important;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.vault-btn-ellipsis {
+  background-color: var(--bg-main);
+  font-size: 0.56rem !important;
+  padding: 4px 3px !important;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.am-side-toggle {
+  height: 21px;
+  padding: 0 7px;
+  border-radius: 4px;
+  font-size: 0.53rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background-color: var(--bg-main);
+  color: #e2e0dc;
+  border: 1px solid var(--app-accent);
+}
+.am-side-toggle:hover {
+  background-color: var(--app-accent);
+  color: #ffffff;
+}
+
+.custom-tint-gauge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--bg-main);
+  border: 1px solid var(--bg-border);
+  border-radius: 4px;
+  padding: 0 5px;
+  height: 100%;
+  min-width: 0;
+}
+.custom-tint-gauge.active {
+  border-color: var(--app-accent);
+}
+.custom-tint-gauge input[type="range"] {
+  min-width: 0;
+  height: 4px;
+}
+.custom-tint-gauge input[type="range"]::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+}
+.custom-tint-gauge.active input[type="range"]::-webkit-slider-thumb {
+  background: var(--app-accent);
+  border-color: #fff;
+}
+.custom-tint-val {
+  font-size: 0.54rem;
+  font-weight: 800;
+  color: #e2e0dc;
+  min-width: 24px;
+  text-align: right;
+  user-select: none;
+}
+
+.tint-preset-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+.tint-btn,
+.override-btn {
+  background-color: var(--bg-tile);
+  border: 1px solid var(--bg-border);
+  color: var(--text-muted);
+  padding: 3px 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.1s ease;
+}
+.override-btn {
+  padding: 4px 4px;
+  letter-spacing: 0.3px;
+}
+
+/* ==========================================================================
+   HOVER & ACTIVE STATES
+   ========================================================================== */
+.tint-btn:not(.active):not(#ambientToggle):hover,
+.override-btn:not(.active):not(#ambientToggle):hover,
+.font-btn:not(.active):hover,
+.font-size-square-btn:not(.active-mode):hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--text-muted) !important;
+}
+
+.tint-btn.active,
+.override-btn.active,
+.font-btn.active:not(.auto-match-container),
+.font-size-square-btn.active-mode {
+  background-color: var(--app-accent) !important;
+  border-color: var(--app-accent) !important;
+  color: #ffffff !important;
+}
+
+/* ==========================================================================
+   TYPOGRAPHY SUITE FOLDER SYSTEM & UNIFORM CUSTOM SPLIT DECK
+   ========================================================================== */
+.typo-folder-system {
+  display: flex;
+  flex-direction: column;
+}
+.folder-tabs {
+  display: flex;
+  gap: 2px;
+  width: 100%;
+  padding-left: 0;
+  z-index: 2;
+}
+.folder-tab {
+  flex: 1;
+  text-align: center;
+  background: var(--bg-main);
+  border: 1px solid var(--bg-border);
+  border-bottom: none;
+  color: var(--text-muted);
+  font-size: 0.54rem;
+  font-weight: 700;
+  padding: 5px 2px;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: all 0.1s ease;
+  letter-spacing: 0.4px;
+}
+.folder-tab:hover:not(.active) {
+  color: #fff;
+  background: var(--bg-tile);
+}
+.folder-tab.active {
+  background: var(--bg-tile);
+  color: #fff !important;
+  border-color: var(--app-accent);
+  border-bottom: 1px solid var(--bg-tile);
+}
+.folder-content-box {
+  background: var(--bg-tile);
+  border: 1px solid var(--app-accent);
+  border-radius: 0 4px 4px 4px;
+  padding: 6px;
+  min-height: 72px;
+  z-index: 1;
+}
+.font-roster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  transition: opacity 0.2s ease;
+}
+.font-roster.hidden {
+  display: none !important;
+  opacity: 0;
+}
+.font-btn {
+  background: var(--bg-main);
+  border: 1px solid var(--bg-border);
+  color: var(--text-muted);
+  font-size: 0.64rem;
+  font-weight: 600;
+  padding: 5px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+/* Custom Tab 3-Part Layout: Static (Left) | 3-Dot Pillar | Auto-Match (Right) */
+.custom-deck-split {
+  display: grid;
+  grid-template-columns: 1fr 14px 1.1fr;
+  gap: 5px;
+  width: 100%;
+  align-items: stretch;
+}
+.custom-static-col,
+.custom-automatch-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.custom-col-title {
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+.static-set-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 4px 6px;
+  width: 100%;
+  text-align: left;
+  gap: 1px;
+}
+.static-set-tag {
+  font-size: 0.44rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+.static-set-btn.active .static-set-tag,
+.static-set-btn.active .static-set-name {
+  color: #ffffff !important;
+}
+.static-set-name {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #e2e0dc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+#createCustomSetBtn {
+  font-size: 0.54rem;
+  font-weight: 700;
+  padding: 4px 5px;
+  color: var(--app-accent);
+  border-color: var(--app-accent);
+  margin-top: auto;
+}
+
+/* Clean 3-Dot Divider Pillar */
+.tactical-divider {
+  background: var(--bg-main);
+  border: 1px solid var(--bg-border);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+.tactical-dots {
+  writing-mode: vertical-rl;
+  font-size: 0.54rem;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+/* Auto-Match: Outer Wireframe & Center Swap Icon Illumination Only */
+.am-deck-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.auto-match-container {
+  background: var(--bg-tile) !important;
+  border: 1px solid var(--bg-border);
+  border-radius: 4px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  flex: 1;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.auto-match-container.active {
+  border: 1.5px solid var(--app-accent) !important;
+}
+.am-card {
+  width: 100%;
+  padding: 4px 6px;
+  border-radius: 4px;
+  background-color: var(--bg-main);
+  border: 1px solid var(--bg-border);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 2;
+  text-align: left;
+}
+.am-card:first-child {
+  margin-bottom: -4px;
+}
+.am-card:last-child {
+  margin-top: -4px;
+}
+.am-title {
+  font-size: 0.44rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+}
+.am-value {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #e2e0dc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.auto-match-container.active .am-value {
+  color: #ffffff;
+}
+.am-link-icon {
+  background-color: var(--bg-tile);
+  color: var(--text-muted);
+  border: 1px solid var(--bg-border);
+  border-radius: 3px;
+  padding: 0px 5px;
+  font-size: 0.58rem;
+  font-weight: 800;
+  z-index: 3;
+  line-height: 1.2;
+  transition: all 0.15s ease;
+}
+.auto-match-container.active .am-link-icon {
+  background-color: var(--app-accent) !important;
+  border-color: var(--app-accent) !important;
+  color: #ffffff !important;
+}
+
+/* ==========================================================================
+   FRAMELESS RIGHT-COLUMN CONTROLS (Typography & Sensory)
+   ========================================================================== */
+.sensory-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.sensory-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent !important;
+  border: none !important;
+  padding: 2px 0;
+  cursor: pointer;
+}
+.sensory-name {
+  font-size: 0.66rem;
+  font-weight: 500;
+  color: #d4d4d8;
+  user-select: none;
+}
+.hz-inline-readout {
+  font-size: 0.52rem;
+  color: var(--text-muted);
+  margin-left: 4px;
+  font-weight: 800;
+}
+
+/* Uniform Pill Toggle Switch */
+.sensory-toggle {
+  width: 28px;
+  height: 15px;
+  background-color: var(--bg-tile);
+  border: 1px solid var(--bg-border);
+  border-radius: 10px;
+  position: relative;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.toggle-knob {
+  width: 9px;
+  height: 9px;
+  background-color: var(--text-muted);
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Square Readout Button for Font Size */
+.font-size-square-btn {
+  width: 28px;
+  height: 18px;
+  background-color: var(--bg-tile);
+  border: 1px solid var(--bg-border);
+  border-radius: 3px;
+  color: #e2e0dc;
+  font-size: 0.58rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+/* Active Pill States */
+.sensory-row[data-state="enabled"] .sensory-toggle,
+.sensory-row[data-audio-state="1"] .sensory-toggle,
+.sensory-row[data-audio-state="2"] .sensory-toggle,
+.sensory-row[data-audio-state="3"] .sensory-toggle {
+  background-color: var(--app-accent);
+  border-color: var(--app-accent);
+}
+.sensory-row[data-state="enabled"] .toggle-knob,
+.sensory-row[data-audio-state="1"] .toggle-knob,
+.sensory-row[data-audio-state="2"] .toggle-knob,
+.sensory-row[data-audio-state="3"] .toggle-knob {
+  background-color: #ffffff;
+  left: 14px;
+}
+.sensory-row[data-audio-state="1"] .hz-inline-readout,
+.sensory-row[data-audio-state="2"] .hz-inline-readout,
+.sensory-row[data-audio-state="3"] .hz-inline-readout {
+  color: var(--app-accent);
+}
+
+/* ==========================================================================
+   AMBIENT LIGHTING HUB OVERLAY
+   ========================================================================== */
+.ambient-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 99999;
+  display: none;
+  flex-direction: column;
+  opacity: 0;
+  background: var(--bg-main);
+  transition: opacity 0.3s;
+}
+.ambient-overlay.active {
+  display: flex;
+  opacity: 1;
+  pointer-events: auto;
+}
+.ambient-scroll-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.ambient-back-btn {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--bg-border);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.ambient-back-btn:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+.ambient-zone {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  transition: flex 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  border-bottom: 1px solid var(--bg-border);
+  min-height: 0;
+}
+.ambient-overlay[data-view="hub"]:has(.ambient-zone:hover)
+  .ambient-zone:not(:hover) {
+  flex: 0.7;
+}
+.ambient-overlay[data-view="hub"]:has(.ambient-zone:hover) .ambient-zone:hover {
+  flex: 1.5;
+}
+.zone-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.green-zone .zone-bg {
+  background: radial-gradient(circle, var(--glt-525) 0%, var(--glt-545) 100%);
+}
+.blue-zone .zone-bg {
+  background: radial-gradient(circle, var(--blt-480) 0%, var(--blt-460) 100%);
+}
+.amber-zone .zone-bg {
+  background: radial-gradient(circle, var(--gh-2700) 0%, var(--pbm-660) 100%);
+}
+
+.zone-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.zone-title {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.15rem;
+  pointer-events: auto;
+}
+.hub-enter-btn {
+  margin-top: 6px;
+  padding: 5px 14px;
+  background: var(--bg-tile);
+  border: 1px solid var(--bg-border);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.68rem;
+  border-radius: 6px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.hub-enter-btn:hover {
+  background: var(--bg-border);
+}
+.zone-controls {
+  display: none;
+  gap: 8px;
+  margin-top: 12px;
+  opacity: 0;
+  pointer-events: none;
+}
+.ambient-global-actions {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  gap: 10px;
+  z-index: 1000;
+  opacity: 0;
+}
+.glt-close-text {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: #fff;
+  display: none;
+  opacity: 0;
+  pointer-events: auto;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.ambient-overlay[data-view="hub"] .ambient-zone {
+  cursor: pointer;
+}
+.ambient-overlay[data-view="green"] .ambient-zone:not(.green-zone),
+.ambient-overlay[data-view="blue"] .ambient-zone:not(.blue-zone),
+.ambient-overlay[data-view="amber"] .ambient-zone:not(.amber-zone),
+.ambient-overlay[data-view="kitchen"] .ambient-zone:not(.kitchen-zone) {
+  display: none;
+}
+.ambient-overlay:not([data-view="hub"]) .ambient-zone {
+  flex: 1;
+  height: 100%;
+  min-height: 100%;
+  cursor: default;
+}
+.ambient-overlay:not([data-view="hub"]) .zone-controls,
+.ambient-overlay:not([data-view="hub"]) .ambient-global-actions,
+.ambient-overlay:not([data-view="hub"]) .glt-close-text {
+  display: flex;
+  opacity: 1;
+  pointer-events: auto;
+}
+.ambient-overlay:not([data-view="hub"]) #btnAmbientBack,
+.ambient-overlay:not([data-view="hub"]) .hub-enter-btn {
+  display: none;
+}
+
+.lamp-click-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: none;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+.ambient-overlay:not([data-view="hub"]) .lamp-click-layer {
+  display: block;
+}
+
+.glt-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 95px;
+  height: 46px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--bg-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.glt-tile .tile-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.62rem;
+  font-weight: 700;
+  pointer-events: none;
+}
+.glt-tile .hz-readout {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.55rem;
+  font-weight: 600;
+  pointer-events: none;
+  margin-top: 2px;
+}
+.glt-tile.active {
+  border: 1px solid #fff;
+  background: rgba(0, 0, 0, 0.8);
+}
+.glt-tile.active .tile-label {
+  color: #fff;
+}
+.glt-tile.active .hz-readout {
+  color: #ccc;
+}
+
+.glt-action-btn {
+  padding: 7px 14px;
+  background: var(--bg-tile);
+  border: 1px solid var(--bg-border);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.72rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.glt-action-btn:hover {
+  background: var(--bg-border);
+}
+html.expanded-lamp #ambientExpandBtn {
+  display: none !important;
+}
+#ambientFullScreenBtn {
+  display: none;
+}
+html.expanded-lamp #ambientFullScreenBtn {
+  display: block;
+}
+
+/* THE LIGHT KITCHEN */
+.kitchen-zone {
+  background: var(--bg-main);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+}
+.kitchen-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+}
+.kitchen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.kitchen-main-title {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+}
+.kitchen-subtitle {
+  color: var(--text-muted);
+  font-size: 0.64rem;
+  text-align: left;
+}
+.kitchen-bays-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+.kitchen-slot-btn {
+  background: var(--bg-tile);
+  border: 1px solid var(--bg-border);
+  color: var(--text-muted);
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 6px 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.kitchen-slot-btn.active {
+  border-color: var(--app-accent);
+  color: #fff;
+  background: var(--app-accent);
+}
+.kitchen-slot-btn.empty {
+  border-style: dashed;
+}
+.kitchen-readout-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  background: var(--bg-tile);
+  border: 1px solid var(--bg-border);
+  border-radius: 6px;
+  padding: 6px;
+  text-align: center;
+}
+.readout-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.readout-label {
+  font-size: 0.48rem;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+.readout-val {
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: #fff;
+}
+.kitchen-slider-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.kitchen-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ks-label {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  width: 100px;
+  font-weight: 600;
+  text-align: left;
+}
+.ks-val-badge {
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--bg-tile);
+  border: 1px solid var(--bg-border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  min-width: 42px;
+  text-align: center;
+}
+
+/* ==========================================================================
+   ABOUT ACCORDION CARD & ARROWS
+   ========================================================================== */
+.manifesto-card {
+  background: var(--bg-tile);
+  border: 1px solid var(--bg-border);
+  border-left: 3px solid var(--app-accent);
+  border-radius: 4px;
+  padding: 7px 9px;
+}
+.manifesto-header {
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.manifesto-body {
+  color: var(--text-muted);
+  font-size: 0.56rem;
+  line-height: 1.35;
+  font-weight: 400;
+}
+.about-divider {
+  height: 1px;
+  background: var(--bg-border);
+  margin: 6px 0;
+}
+.cycle-arrows {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.cycle-arrow {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  cursor: pointer;
+  user-select: none;
+  display: inline-block;
+  padding: 0 2px;
+}
+.cycle-arrow:hover {
+  color: #fff;
+  transform: scale(1.1);
+}
