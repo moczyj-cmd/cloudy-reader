@@ -82,6 +82,7 @@ const MAX_NOTES_CHARS = 2000;
 
 const CloudyEngine = {
   activeTabIsDark: false,
+  kitchenPulseTick: null,
 
   state: {
     rosterVersion: 11,
@@ -223,6 +224,7 @@ const CloudyEngine = {
     this.bindEvents();
     this.hydrateSilo();
     this.updateDeckCustomButtons();
+    this.updateAmbientUI();
   },
 
   cacheDOM() {
@@ -331,6 +333,8 @@ const CloudyEngine = {
     this.nodes.ksRhythmBadge = document.getElementById("ksRhythmBadge");
     this.nodes.kReadoutWl = document.getElementById("kReadoutWl");
     this.nodes.kReadoutTemp = document.getElementById("kReadoutTemp");
+    this.nodes.kReadoutPhase = document.getElementById("kReadoutPhase");
+    this.nodes.kReadoutIntensity = document.getElementById("kReadoutIntensity");
 
     this.nodes.resetFontSizesBtn = document.getElementById("resetFontSizesBtn");
     this.nodes.fontDropdowns = document.querySelectorAll(".font-dropdown");
@@ -586,8 +590,30 @@ const CloudyEngine = {
     this.nodes.hzReadout.textContent = labels[mode] || "OFF";
   },
 
+  wavelengthToHex(wl) {
+    const w = parseInt(wl, 10) || 480;
+    if (w <= 465) return "#0047FF";
+    if (w <= 495) return "#00BFFF";
+    if (w <= 535) return "#00FF00";
+    if (w <= 565) return "#7CFF00";
+    if (w <= 610) return "#FFA657";
+    return "#FF0000";
+  },
+
+  kelvinToHex(kelvin) {
+    const k = parseInt(kelvin, 10) || 4600;
+    if (k <= 3200) return "#FF8A3D";
+    if (k <= 4200) return "#FFB969";
+    if (k <= 5200) return "#FFF1E0";
+    return "#9CE0FF";
+  },
+
+  // Directly Renders & Animates Green, Blue, Amber, and Light Kitchen Backdrops Inside Popup & Expanded Views
   updateAmbientUI() {
+    if (!this.nodes.ambientOverlay) return;
     this.nodes.ambientOverlay.setAttribute("data-view", this.ambient.view);
+
+    // 1. GREEN LAMP RENDERER (525nm / 545nm / BLEND / DUAL Checkerboard + 9 Static Lux Steps)
     this.nodes.greenZone.setAttribute("data-mode", this.ambient.greenMode);
     this.nodes.greenZone.setAttribute("data-step", this.ambient.greenStep);
     this.nodes.btnGreenCycle.classList.remove("active");
@@ -595,26 +621,74 @@ const CloudyEngine = {
     this.nodes.lblGreenCycle.textContent = "OFF";
     this.nodes.lblGreenStatic.textContent = "OFF";
 
-    if (this.ambient.greenMode === "cycle") {
-      this.nodes.btnGreenCycle.classList.add("active");
-      const cycleMap = { 1: "525nm", 2: "545nm", 3: "BLEND", 4: "DUAL" };
-      this.nodes.lblGreenCycle.textContent = cycleMap[this.ambient.greenStep];
-    } else if (this.ambient.greenMode === "static") {
-      this.nodes.btnGreenStatic.classList.add("active");
-      const map = {
-        1: "525 DIM",
-        2: "525 MED",
-        3: "525 MAX",
-        4: "545 DIM",
-        5: "545 MED",
-        6: "545 MAX",
-        7: "DUAL DIM",
-        8: "DUAL MED",
-        9: "DUAL MAX",
-      };
-      this.nodes.lblGreenStatic.innerHTML = map[this.ambient.greenStep].replace(" ", "<br>");
+    const greenBgEl = this.nodes.greenZone ? this.nodes.greenZone.querySelector(".zone-bg") : null;
+    if (greenBgEl) {
+      greenBgEl.style.animation = "none";
+      greenBgEl.style.backgroundImage = "none";
+      greenBgEl.style.backgroundSize = "auto";
+      greenBgEl.style.filter = "none";
+
+      if (this.ambient.greenMode === "cycle") {
+        this.nodes.btnGreenCycle.classList.add("active");
+        const cycleMap = { 1: "525nm", 2: "545nm", 3: "BLEND", 4: "DUAL" };
+        this.nodes.lblGreenCycle.textContent = cycleMap[this.ambient.greenStep];
+
+        if (this.ambient.greenStep === 1) {
+          greenBgEl.style.background = "#00FF00";
+          greenBgEl.style.animation = "popupLampBreathe 8s infinite alternate ease-in-out";
+        } else if (this.ambient.greenStep === 2) {
+          greenBgEl.style.background = "#7CFF00";
+          greenBgEl.style.animation = "popupLampBreathe 8s infinite alternate ease-in-out";
+        } else if (this.ambient.greenStep === 3) {
+          greenBgEl.style.background = "#00FF00";
+          greenBgEl.style.animation = "popupGltBlend 12s infinite alternate ease-in-out";
+        } else if (this.ambient.greenStep === 4) {
+          greenBgEl.style.backgroundColor = "#00FF00";
+          greenBgEl.style.backgroundImage =
+            "conic-gradient(#7CFF00 90deg, transparent 90deg 180deg, #7CFF00 180deg 270deg, transparent 270deg)";
+          greenBgEl.style.backgroundSize = "48px 48px";
+          greenBgEl.style.animation = "popupLampBreathe 8s infinite alternate ease-in-out";
+        }
+      } else if (this.ambient.greenMode === "static") {
+        this.nodes.btnGreenStatic.classList.add("active");
+        const map = {
+          1: "525 DIM",
+          2: "525 MED",
+          3: "525 MAX",
+          4: "545 DIM",
+          5: "545 MED",
+          6: "545 MAX",
+          7: "DUAL DIM",
+          8: "DUAL MED",
+          9: "DUAL MAX",
+        };
+        this.nodes.lblGreenStatic.innerHTML = map[this.ambient.greenStep].replace(" ", "<br>");
+
+        const step = this.ambient.greenStep;
+        if (step >= 7) {
+          greenBgEl.style.backgroundColor = "#00FF00";
+          greenBgEl.style.backgroundImage =
+            "conic-gradient(#7CFF00 90deg, transparent 90deg 180deg, #7CFF00 180deg 270deg, transparent 270deg)";
+          greenBgEl.style.backgroundSize = "48px 48px";
+        } else {
+          greenBgEl.style.background = step <= 3 ? "#00FF00" : "#7CFF00";
+        }
+        const luxLevels = {
+          1: 0.28,
+          2: 0.58,
+          3: 1.0,
+          4: 0.28,
+          5: 0.58,
+          6: 1.0,
+          7: 0.28,
+          8: 0.58,
+          9: 1.0,
+        };
+        greenBgEl.style.filter = "brightness(" + luxLevels[step] + ")";
+      }
     }
 
+    // 2. BLUE LAMP RENDERER (480nm Static / 460nm Breathe / Cycle Blend)
     this.nodes.blueZone.setAttribute("data-mode", this.ambient.blueMode);
     [this.nodes.btnBlueCoffee, this.nodes.btnBlueRezzed, this.nodes.btnBlueCycle].forEach((b) =>
       b.classList.remove("active")
@@ -623,6 +697,22 @@ const CloudyEngine = {
     if (this.ambient.blueMode === "rezzed") this.nodes.btnBlueRezzed.classList.add("active");
     if (this.ambient.blueMode === "cycle") this.nodes.btnBlueCycle.classList.add("active");
 
+    const blueBgEl = this.nodes.blueZone ? this.nodes.blueZone.querySelector(".zone-bg") : null;
+    if (blueBgEl) {
+      blueBgEl.style.animation = "none";
+      blueBgEl.style.filter = "none";
+      if (this.ambient.blueMode === "coffee") {
+        blueBgEl.style.background = "#00BFFF";
+      } else if (this.ambient.blueMode === "rezzed") {
+        blueBgEl.style.background = "#0047FF";
+        blueBgEl.style.animation = "popupLampBreathe 8s infinite alternate ease-in-out";
+      } else if (this.ambient.blueMode === "cycle") {
+        blueBgEl.style.background = "#0047FF";
+        blueBgEl.style.animation = "popupBltBlend 12s infinite alternate ease-in-out";
+      }
+    }
+
+    // 3. AMBER LAMP RENDERER (660nm Breathe / 2700K Static / Cone Breathe)
     this.nodes.amberZone.setAttribute("data-mode", this.ambient.amberMode);
     [this.nodes.btnAmberBreathe, this.nodes.btnAmberStatic, this.nodes.btnAmberBlend].forEach((b) =>
       b.classList.remove("active")
@@ -630,6 +720,80 @@ const CloudyEngine = {
     if (this.ambient.amberMode === "breathe") this.nodes.btnAmberBreathe.classList.add("active");
     if (this.ambient.amberMode === "static") this.nodes.btnAmberStatic.classList.add("active");
     if (this.ambient.amberMode === "blend") this.nodes.btnAmberBlend.classList.add("active");
+
+    const amberBgEl = this.nodes.amberZone ? this.nodes.amberZone.querySelector(".zone-bg") : null;
+    if (amberBgEl) {
+      amberBgEl.style.animation = "none";
+      amberBgEl.style.filter = "none";
+      if (this.ambient.amberMode === "static") {
+        amberBgEl.style.background = "#FFA657";
+      } else if (this.ambient.amberMode === "blend") {
+        amberBgEl.style.background =
+          "radial-gradient(circle at 50% 50%, #FFA657 0%, #FF0000 82%)";
+        amberBgEl.style.animation = "popupLampBreathe 8s infinite alternate ease-in-out";
+      } else {
+        amberBgEl.style.background = "#FFA657";
+        amberBgEl.style.animation = "popupAmberBlend 12s infinite alternate ease-in-out";
+      }
+    }
+
+    // 4. LIGHT KITCHEN LIVE SYNTHESIZER
+    this.renderKitchenPopupBackdrop();
+  },
+
+  renderKitchenPopupBackdrop() {
+    if (!this.nodes.kitchenZone) return;
+    const primaryColor = this.wavelengthToHex(this.state.kitchenWl || 480);
+    const activeSlotWls = [];
+    this.nodes.kitchenSlots.forEach((btn) => {
+      if (btn.classList.contains("active")) {
+        const parsedWl = parseInt(btn.textContent, 10);
+        if (!isNaN(parsedWl)) activeSlotWls.push(parsedWl);
+      }
+    });
+
+    const secondaryColor =
+      activeSlotWls.length > 1
+        ? this.wavelengthToHex(activeSlotWls[activeSlotWls.length - 1])
+        : this.kelvinToHex(this.state.kitchenTemp || 4600);
+    const outerColor = this.kelvinToHex(this.state.kitchenTemp || 4600);
+    const gradientStr =
+      "radial-gradient(circle at 50% 50%, " +
+      primaryColor +
+      " 0%, " +
+      secondaryColor +
+      " 55%, " +
+      outerColor +
+      " 100%)";
+
+    this.nodes.kitchenZone.style.setProperty("--kitchen-live-bg", gradientStr);
+    this.nodes.kitchenZone.style.setProperty(
+      "--kitchen-rhythm",
+      (this.state.kitchenRhythm || 12) + "s"
+    );
+
+    if (!this.kitchenPulseTick) {
+      this.kitchenPulseTick = setInterval(() => {
+        if (
+          !this.nodes.ambientOverlay ||
+          !this.nodes.ambientOverlay.classList.contains("active")
+        ) {
+          return;
+        }
+        const rhythmSec = Math.max(4, this.state.kitchenRhythm || 12);
+        const nowSec = (Date.now() / 1000) % (rhythmSec * 2);
+        const norm =
+          nowSec <= rhythmSec ? nowSec / rhythmSec : 1 - (nowSec - rhythmSec) / rhythmSec;
+        const pct = Math.round(20 + norm * 80);
+        if (this.nodes.kReadoutIntensity) {
+          this.nodes.kReadoutIntensity.textContent = pct + "%";
+        }
+        if (this.nodes.kReadoutPhase) {
+          this.nodes.kReadoutPhase.textContent =
+            nowSec <= rhythmSec ? "Inhale / Peak" : "Exhale / Calm";
+        }
+      }, 400);
+    }
   },
 
   populateFontAndSizeSelects(fontSelectEl, sizeSelectEl, selectedFont, selectedSize) {
@@ -757,7 +921,6 @@ const CloudyEngine = {
     });
   },
 
-  // Updates Right-Column visual readouts from a preset loadout without polluting other tabs
   syncMainDeckIndicatorsFromLoadout(loadoutData, themeIndex) {
     if (!loadoutData) return;
 
@@ -795,7 +958,6 @@ const CloudyEngine = {
     }
   },
 
-  // Pings the active tab immediately on popup open so Auto-Match readouts match reality
   syncAutoMatchReadoutWithActiveTab(amPair) {
     if (!amPair) return;
     const applySideReadout = (isDark) => {
@@ -827,7 +989,6 @@ const CloudyEngine = {
     }
   },
 
-  // Returns the active preset loadout object if a Static Set or Auto-Match is currently active
   getActivePresetTarget() {
     const idx = this.state.curatedThemeIndex || 0;
     if (idx === 21 || idx === 22) {
@@ -930,7 +1091,7 @@ const CloudyEngine = {
       });
     });
 
-    // Universal [data-tooltip] Hover Listener (Restores Pinned Notes or Disclaimer on Mouseleave)
+    // Universal [data-tooltip] Hover Listener
     document.querySelectorAll("[data-tooltip]").forEach((el) => {
       el.addEventListener("mouseenter", (e) => {
         if (e.currentTarget.id === "notesHudToggleBtn" && this.state.notesInHud) {
@@ -1310,7 +1471,7 @@ const CloudyEngine = {
       });
     }
 
-    // Right-Column Typography Controls (Updates Active Preset Side if Preset Is Active)
+    // Right-Column Typography Controls
     if (this.nodes.kineticFocusRow) {
       this.nodes.kineticFocusRow.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -1435,6 +1596,23 @@ const CloudyEngine = {
         this.updateAmbientUI();
       }
     });
+
+    const closeTextEl = document.querySelector(".glt-close-text");
+    if (closeTextEl) {
+      closeTextEl.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (document.documentElement.classList.contains("expanded-lamp")) {
+          document.documentElement.classList.remove("expanded-lamp");
+          document.body.classList.remove("expanded-lamp");
+          this.nodes.html.style.width = "560px";
+          document.body.style.width = "560px";
+          closeTextEl.textContent = "Click screen to return to Hub";
+        } else {
+          this.ambient.view = "hub";
+          this.updateAmbientUI();
+        }
+      });
+    }
 
     this.nodes.lampClickLayers.forEach((layer) => {
       layer.addEventListener("click", (e) => {
@@ -1575,22 +1753,26 @@ const CloudyEngine = {
       this.state.kitchenWl = parseInt(e.target.value, 10);
       this.nodes.ksWlBadge.textContent = e.target.value;
       this.nodes.kReadoutWl.textContent = e.target.value + " nm";
+      this.renderKitchenPopupBackdrop();
       this.lockDownSilo();
     });
     this.nodes.ksColorTemp.addEventListener("input", (e) => {
       this.state.kitchenTemp = parseInt(e.target.value, 10);
       this.nodes.ksTempBadge.textContent = e.target.value;
       this.nodes.kReadoutTemp.textContent = e.target.value + " K";
+      this.renderKitchenPopupBackdrop();
       this.lockDownSilo();
     });
     this.nodes.ksRhythm.addEventListener("input", (e) => {
       this.state.kitchenRhythm = parseInt(e.target.value, 10);
       this.nodes.ksRhythmBadge.textContent = e.target.value;
+      this.renderKitchenPopupBackdrop();
       this.lockDownSilo();
     });
 
     this.nodes.kitchenSlots.forEach((btn) => {
       btn.addEventListener("click", (e) => {
+        e.stopPropagation();
         const slotIdx = parseInt(e.target.getAttribute("data-slot"), 10);
         if (btn.classList.contains("empty")) {
           btn.classList.remove("empty");
@@ -1603,6 +1785,7 @@ const CloudyEngine = {
           btn.textContent = "+";
           this.state.kitchenActiveSlots = this.state.kitchenActiveSlots.filter((s) => s !== slotIdx);
         }
+        this.renderKitchenPopupBackdrop();
         this.lockDownSilo();
       });
     });
@@ -1666,7 +1849,7 @@ const CloudyEngine = {
       });
     });
 
-    // Screen Tinting Controls (Syncs with Active Preset if Active)
+    // Screen Tinting Controls
     this.nodes.shieldSlider.addEventListener("input", (e) => {
       const val = parseInt(e.target.value, 10);
       this.nodes.intensityDisplay.textContent = val + "%";
@@ -1834,6 +2017,7 @@ const CloudyEngine = {
           this.updateNotesCounter("");
           this.renderNotesHudBtn();
           this.restoreDefaultHUD();
+          this.updateAmbientUI();
           return;
         }
 
@@ -1854,7 +2038,6 @@ const CloudyEngine = {
           this.state.previousUiTheme || this.state.uiTheme || "blue"
         );
 
-        // Hydrate Notes Scratchpad & HUD Pin State
         const savedNotes = (this.state.userNotes || "").substring(0, MAX_NOTES_CHARS);
         this.state.userNotes = savedNotes;
         this.state.notesInHud = !!this.state.notesInHud;
@@ -1865,7 +2048,6 @@ const CloudyEngine = {
         this.renderNotesHudBtn();
         this.restoreDefaultHUD();
 
-        // Hydrate Light Kitchen Sliders
         if (this.nodes.ksWavelength && this.state.kitchenWl) {
           this.nodes.ksWavelength.value = String(this.state.kitchenWl);
           this.nodes.ksWlBadge.textContent = String(this.state.kitchenWl);
@@ -1880,6 +2062,8 @@ const CloudyEngine = {
           this.nodes.ksRhythm.value = String(this.state.kitchenRhythm);
           this.nodes.ksRhythmBadge.textContent = String(this.state.kitchenRhythm);
         }
+
+        this.updateAmbientUI();
 
         this.state.sizeMatrix = this.state.sizeMatrix || [14, 17, 22];
         if (this.nodes.fontDropdowns && this.nodes.fontDropdowns.length === 3) {
