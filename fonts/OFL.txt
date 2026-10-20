@@ -1,0 +1,1 @@
+This folder contains open-source typography. Please refer to legal.html in the root directory for the complete text of the SIL Open Font License 1.1, Apache 2.0 License, and Ubuntu Font Licence 1.0.

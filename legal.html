@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cloudy Reader — Legal, Privacy &amp; Font Licenses</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background-color: #18181a;
+        color: #e2e0dc;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        padding: 36px 20px;
+        line-height: 1.6;
+      }
+      .legal-container {
+        max-width: 840px;
+        margin: 0 auto;
+        background-color: #252526;
+        border: 1px solid #38383a;
+        border-top: 4px solid #2680eb;
+        border-radius: 6px;
+        padding: 32px;
+      }
+      .header-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #38383a;
+        padding-bottom: 16px;
+        margin-bottom: 24px;
+      }
+      .brand-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #ffffff;
+      }
+      .badge {
+        background-color: rgba(38, 128, 235, 0.15);
+        border: 1px solid #2680eb;
+        color: #2680eb;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 4px;
+        letter-spacing: 0.6px;
+      }
+      h2 {
+        color: #2680eb;
+        font-size: 0.88rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        border-bottom: 1px solid #38383a;
+        padding-bottom: 6px;
+        margin: 28px 0 12px 0;
+      }
+      p {
+        font-size: 0.88rem;
+        color: #c4c4cc;
+        margin-bottom: 12px;
+      }
+      .shield-callout {
+        background-color: #1b1b1c;
+        border: 1px solid #38383a;
+        border-left: 4px solid #10b981;
+        padding: 14px 18px;
+        border-radius: 4px;
+        margin-bottom: 16px;
+      }
+      .shield-callout p {
+        margin-bottom: 6px;
+        color: #e2e0dc;
+      }
+      .shield-callout p:last-child {
+        margin-bottom: 0;
+      }
+      .registry-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 18px;
+        background-color: #1b1b1c;
+        border: 1px solid #38383a;
+        border-radius: 4px;
+        padding: 14px 18px;
+        margin-bottom: 14px;
+        font-size: 0.82rem;
+      }
+      .registry-row {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px dashed #2e2e32;
+        padding-bottom: 4px;
+      }
+      .registry-row strong {
+        color: #ffffff;
+      }
+      .registry-row span {
+        color: #9e9ea6;
+        font-size: 0.76rem;
+      }
+      .license-box {
+        background-color: #141416;
+        border: 1px solid #38383a;
+        border-radius: 4px;
+        padding: 16px;
+        height: 320px;
+        overflow-y: auto;
+        font-family: Consolas, monospace;
+        font-size: 0.76rem;
+        line-height: 1.5;
+        color: #9e9ea6;
+        white-space: pre-wrap;
+      }
+      .license-box strong {
+        color: #ffffff;
+      }
+      .ref-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .ref-links a {
+        color: #2680eb;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-decoration: none;
+        background: #1b1b1c;
+        border: 1px solid #38383a;
+        padding: 6px 12px;
+        border-radius: 4px;
+      }
+      .ref-links a:hover {
+        border-color: #2680eb;
+        color: #ffffff;
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #1b1b1c;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #2680eb;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="legal-container">
+      <div class="header-bar">
+        <div class="brand-title">
+          <img src="gemini-svg.png" alt="" style="width: 24px; height: 24px; object-fit: contain;" />
+          Cloudy Reader — Legal, Privacy &amp; Licensing Registry
+        </div>
+        <span class="badge">100% LOCAL AIR-GAPPED BUILD</span>
+      </div>
+
+      <h2>1. Zero-Telemetry Privacy Policy</h2>
+      <div class="shield-callout">
+        <p>
+          <strong>Zero Data Collection Guarantee:</strong> Cloudy Reader does not collect,
+          harvest, store, transmit, or sell any personal data, browsing history, IP
+          addresses, or usage analytics.
+        </p>
+        <p>
+          <strong>100% Local Storage &amp; Execution:</strong> All user preferences, custom
+          typography presets, and scratchpad notes are stored strictly on your local storage
+          hardware via <code>chrome.storage.local</code>. All bundled open-source fonts and
+          speech synthesis routines execute locally on your device without pinging external
+          font CDNs or remote telemetry servers.
+        </p>
+      </div>
+
+      <h2>2. Intellectual Property, Open-Source &amp; Nominative Fair Use Disclosure</h2>
+      <p>
+        <strong>Open-Source Compliance:</strong> In strict accordance with the
+        <strong>SIL Open Font License (OFL-1.1)</strong>, the
+        <strong>Apache License (Version 2.0)</strong>, and the
+        <strong>Ubuntu Font Licence (Version 1.0)</strong>, Cloudy Reader provides full,
+        unedited copyright attribution and license text for all bundled open-source
+        typefaces. Neither the bundled font software nor any of its individual components
+        are sold by themselves; they are bundled strictly as part of this free visual
+        ergonomics utility.
+      </p>
+      <p>
+        <strong>United States Nominative Fair Use Notice:</strong> Furthermore, pursuant to
+        the United States legal doctrine of <em>Nominative Fair Use</em> (15 U.S.C. § 1115),
+        any references to corporate entities, foundries, authors, or trademarked names
+        (including but not limited to Adobe Systems Inc., Google LLC, IBM Corporation,
+        Microsoft Corporation, Canonical Ltd., SIL International, and the Braille Institute)
+        within this application's interface and educational typography lore are utilized
+        strictly for factual historical identification and mandatory open-source copyright
+        attribution. Cloudy Reader is an independent, sovereign software utility and is
+        neither sponsored by, endorsed by, nor affiliated with any of the aforementioned
+        entities.
+      </p>
+
+      <h2>3. Ergonomic &amp; Non-Medical Disclaimer</h2>
+      <p>
+        Cloudy Reader is a client-side environmental customization utility designed to
+        optimize visual comfort and reduce screen friction. It is not a medical device and
+        is not intended to diagnose, treat, cure, or prevent any clinical or ophthalmic
+        condition. This product is not intended for use by persons with reduced physical,
+        sensory, or mental capabilities unless given supervision or instruction by a person
+        responsible for their safety. By using this extension, you acknowledge and agree to
+        these terms.
+      </p>
+
+      <h2>4. Bundled Typography Attribution Registry</h2>
+      <div class="registry-grid">
+        <div class="registry-row"><strong>Source Sans 3</strong><span>© Adobe Systems Inc. (OFL-1.1)</span></div>
+        <div class="registry-row"><strong>Source Code Pro</strong><span>© Adobe Systems Inc. (OFL-1.1)</span></div>
+        <div class="registry-row"><strong>Source Serif 4</strong><span>© Adobe Systems Inc. (OFL-1.1)</span></div>
+        <div class="registry-row"><strong>Noto Sans</strong><span>© Google LLC (OFL-1.1)</span></div>
+        <div class="registry-row"><strong>Literata</strong><span>© Google LLC / TypeTogether (OFL-1.1)</span></div>
+        <div class="registry-row"><strong>Lexend</strong><span>© Bonnie Shaver-Troup / Google (OFL-1.1)</span></div>
+        <div class="registry-row"><strong>Atkinson Hyperlegible Next</strong><span>© Braille Institute (OFL-1.1)</span></div>
+        <div class="registry-row"><strong>IBM Plex Sans</strong><span>© IBM Corp. (OFL-1.1)</span></div>
+        <div class="registry-row"><strong>IBM Plex Mono</strong><span>© IBM Corp. (OFL-1.1)</span></div>
+        <div class="registry-row"><strong>Plus Jakarta Sans</strong><span>© Tokotype / Gumpita Rahayu (OFL-1.1)</span></div>
+        <div class="registry-row"><strong>Andika</strong><span>© SIL International (OFL-1.1)</span></div>
+        <div class="registry-row"><strong>OpenDyslexic</strong><span>© Abelardo Gonzalez (OFL-1.1)</span></div>
+        <div class="registry-row"><strong>Cascadia Mono</strong><span>© Microsoft Corp. (OFL-1.1)</span></div>
+        <div class="registry-row"><strong>Fira Code</strong><span>© The Fira Code Project (OFL-1.1)</span></div>
+        <div class="registry-row"><strong>EB Garamond</strong><span>© Georg Duffner &amp; Octavio Pardo (OFL-1.1)</span></div>
+        <div class="registry-row"><strong>Lora</strong><span>© Cyreal / Olga Karpushina (OFL-1.1)</span></div>
+        <div class="registry-row"><strong>Ubuntu Sans</strong><span>© Canonical Ltd. (Ubuntu-1.0)</span></div>
+        <div class="registry-row"><strong>Ubuntu Sans Mono</strong><span>© Canonical Ltd. (Ubuntu-1.0)</span></div>
+        <div class="registry-row"><strong>Verdana / Palatino</strong><span>Local OS System Stack (Not Bundled)</span></div>
+        <div class="registry-row"><strong>Apache 2.0 Notices</strong><span>Apache License, Version 2.0</span></div>
+      </div>
+
+      <h2>5. Verbatim Open-Source License Texts</h2>
+      <div class="license-box"><strong>====================================================================
+1. SIL OPEN FONT LICENSE (Version 1.1 - 26 February 2007)
+====================================================================</strong>
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide development of collaborative font projects, to support the font creation efforts of academic and linguistic communities, and to provide a free and open framework in which fonts may be shared and improved in partnership with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and redistributed freely as long as they are not sold by themselves. The fonts, including any derivative works, can be bundled, embedded, redistributed and/or sold with any software provided that any reserved names are not used by derivative works. The fonts and derivatives, however, cannot be released under any other type of license. The requirement for fonts to remain under this license does not apply to any document created using the fonts or their derivatives.
+
+PERMISSION &amp; CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining a copy of the Font Software, to use, study, copy, merge, embed, modify, redistribute, and sell modified and unmodified copies of the Font Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components, in Original or Modified Versions, may be sold by itself.
+2) Original or Modified Versions of the Font Software may be bundled, redistributed and/or sold with any software, provided that each copy contains the above copyright notice and this license. These can be included either as stand-alone text files, human-readable headers or in the appropriate machine-readable metadata fields within text or binary files as long as those fields can be easily viewed by the user.
+3) No Modified Version of the Font Software may use the Reserved Font Name(s) unless explicit written permission is granted by the Corresponding Copyright Holder. This restriction only applies to the primary font name as presented to the users.
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font Software shall not be used to promote, endorse or advertise any Modified Version, except to acknowledge the contribution(s) of the Copyright Holder(s) and the Author(s) or with their explicit written permission.
+5) The Font Software, modified or unmodified, in part or in whole, must be distributed entirely under this license, and must not be distributed under any other license. The requirement for fonts to remain under this license does not apply to any document created using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM OTHER DEALINGS IN THE FONT SOFTWARE.
+
+<strong>====================================================================
+2. APACHE LICENSE (Version 2.0, January 2004)
+====================================================================</strong>
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at:
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+<strong>====================================================================
+3. UBUNTU FONT LICENCE (Version 1.0)
+====================================================================</strong>
+PREAMBLE
+This licence allows the licensed fonts to be used, studied, modified and redistributed freely. The fonts, including any derivative works, can be bundled, embedded, and redistributed provided the terms of this licence are met.
+
+PERMISSION &amp; CONDITIONS
+This Font Software is licensed under the Ubuntu Font Licence, Version 1.0. Permission is hereby granted, free of charge, to any person obtaining a copy of the Font Software, to use, study, copy, merge, embed, modify, redistribute, and sell modified and unmodified copies of the Font Software, subject to the following conditions:
+1) Neither the Font Software nor any of its individual components, in Original or Modified Versions, may be sold by itself.
+2) Original or Modified Versions of the Font Software may be bundled, redistributed and/or sold with any software, provided that each copy contains the above copyright notice and this licence.
+3) No Modified Version of the Font Software may use the Reserved Font Name(s) unless explicit written permission is granted by the Corresponding Copyright Holder.</div>
+
+      <h2>6. Official External Reference Registries</h2>
+      <div class="ref-links">
+        <a href="https://openfontlicense.org" target="_blank" rel="noopener noreferrer">SIL Open Font License (OFL-1.1) ↗</a>
+        <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener noreferrer">Apache License 2.0 ↗</a>
+        <a href="https://ubuntu.com/legal/font-licence" target="_blank" rel="noopener noreferrer">Ubuntu Font Licence 1.0 ↗</a>
+      </div>
+    </div>
+  </body>
+</html>

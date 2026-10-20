@@ -1,6 +1,6 @@
 /**
  * ==========================================================================
- * Cloudy Reader ☁️ Live Environment Injector
+ * Cloudy Reader ☁️ Live Environment Injector (100% Local Air-Gapped Build)
  * ==========================================================================
  */
 
@@ -12,43 +12,48 @@ let wave532 = null;
 let wave582 = null;
 let mainAudioGain = null;
 
-// THE DYNAMIC MASTER FONT ROSTER (All Variable Fonts Include 300 & 400 Weights for Adaptive Contrast)
+// 100% LOCAL AIR-GAPPED FONT ROSTER (Zero External CDN Requests)
 const MASTER_FONT_ROSTER = [
-  { name: "Native UI", family: "", url: "", spacing: "", variable: true },
+  { name: "Native UI", family: "", fontKey: "", file: "", spacing: "", variable: true },
 
   /* ZONE 1: POWER (1 - 5) */
   {
     name: "Source Sans 3",
-    family: "'Source Sans 3', sans-serif",
-    url: "@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');",
+    family: "'Source Sans 3', system-ui, sans-serif",
+    fontKey: "Source Sans 3",
+    file: "SourceSans3.woff2",
     spacing: "1.5",
     variable: true,
   },
   {
     name: "Noto Sans",
-    family: "'Noto Sans', sans-serif",
-    url: "@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');",
+    family: "'Noto Sans', system-ui, sans-serif",
+    fontKey: "Noto Sans",
+    file: "NotoSans.woff2",
     spacing: "1.5",
     variable: true,
   },
   {
     name: "Atkinson Next",
-    family: "'Atkinson Hyperlegible Next', sans-serif",
-    url: "@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&display=swap');",
+    family: "'Atkinson Hyperlegible Next', system-ui, sans-serif",
+    fontKey: "Atkinson Hyperlegible Next",
+    file: "AtkinsonHyperlegibleNext.woff2",
     spacing: "1.6",
     variable: true,
   },
   {
     name: "Ubuntu Sans",
-    family: "'Ubuntu Sans', sans-serif",
-    url: "@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Sans:ital,wght@0,100..800;1,100..800&display=swap');",
+    family: "'Ubuntu Sans', system-ui, sans-serif",
+    fontKey: "Ubuntu Sans",
+    file: "UbuntuSans.woff2",
     spacing: "1.5",
     variable: true,
   },
   {
     name: "IBM Plex Sans",
-    family: "'IBM Plex Sans', sans-serif",
-    url: "@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap');",
+    family: "'IBM Plex Sans', system-ui, sans-serif",
+    fontKey: "IBM Plex Sans",
+    file: "IBMPlexSans.woff2",
     spacing: "1.55",
     variable: true,
   },
@@ -56,29 +61,33 @@ const MASTER_FONT_ROSTER = [
   /* ZONE 2: WELLNESS (6 - 10) */
   {
     name: "Plus Jakarta Sans",
-    family: "'Plus Jakarta Sans', sans-serif",
-    url: "@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');",
+    family: "'Plus Jakarta Sans', system-ui, sans-serif",
+    fontKey: "Plus Jakarta Sans",
+    file: "PlusJakartaSans.woff2",
     spacing: "1.55",
     variable: true,
   },
   {
     name: "Andika",
-    family: "'Andika', sans-serif",
-    url: "@import url('https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&display=swap');",
+    family: "'Andika', system-ui, sans-serif",
+    fontKey: "Andika",
+    file: "Andika.woff2",
     spacing: "1.6",
     variable: false,
   },
   {
     name: "Lexend",
-    family: "'Lexend', sans-serif",
-    url: "@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');",
+    family: "'Lexend', system-ui, sans-serif",
+    fontKey: "Lexend",
+    file: "Lexend.woff2",
     spacing: "1.6",
     variable: true,
   },
   {
     name: "OpenDyslexic",
     family: "'OpenDyslexic', 'Comic Sans MS', sans-serif",
-    url: "@import url('https://fonts.cdnfonts.com/css/opendyslexic');",
+    fontKey: "OpenDyslexic",
+    file: "OpenDyslexic.woff2",
     spacing: "1.6",
     customCSS: "text-align: left !important; letter-spacing: 0.15em !important; ",
     variable: false,
@@ -86,7 +95,8 @@ const MASTER_FONT_ROSTER = [
   {
     name: "Verdana",
     family: "'Verdana', Geneva, sans-serif",
-    url: "",
+    fontKey: "",
+    file: "",
     spacing: "1.8",
     variable: false,
   },
@@ -94,36 +104,41 @@ const MASTER_FONT_ROSTER = [
   /* ZONE 3: TECH (11 - 15) */
   {
     name: "Cascadia Mono",
-    family: "'Cascadia Mono', monospace",
-    url: "@import url('https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&display=swap');",
+    family: "'Cascadia Mono', Consolas, monospace",
+    fontKey: "Cascadia Mono",
+    file: "CascadiaMono.woff2",
     spacing: "1.6",
     variable: true,
   },
   {
     name: "Ubuntu Sans Mono",
     family: "'Ubuntu Sans Mono', monospace",
-    url: "@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Sans+Mono:ital,wght@0,300..700;1,300..700&display=swap');",
+    fontKey: "Ubuntu Sans Mono",
+    file: "UbuntuSansMono.woff2",
     spacing: "1.6",
     variable: true,
   },
   {
     name: "Fira Code",
     family: "'Fira Code', monospace",
-    url: "@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap');",
+    fontKey: "Fira Code",
+    file: "FiraCode.woff2",
     spacing: "1.6",
     variable: true,
   },
   {
     name: "Source Code Pro",
     family: "'Source Code Pro', monospace",
-    url: "@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');",
+    fontKey: "Source Code Pro",
+    file: "SourceCodePro.woff2",
     spacing: "1.6",
     variable: true,
   },
   {
     name: "IBM Plex Mono",
     family: "'IBM Plex Mono', monospace",
-    url: "@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap');",
+    fontKey: "IBM Plex Mono",
+    file: "IBMPlexMono.woff2",
     spacing: "1.6",
     variable: true,
   },
@@ -131,40 +146,82 @@ const MASTER_FONT_ROSTER = [
   /* ZONE 4: SCHOLAR (16 - 20) */
   {
     name: "Source Serif 4",
-    family: "'Source Serif 4', serif",
-    url: "@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap');",
+    family: "'Source Serif 4', Georgia, serif",
+    fontKey: "Source Serif 4",
+    file: "SourceSerif4.woff2",
     spacing: "1.6",
     variable: true,
   },
   {
     name: "Literata",
-    family: "'Literata', serif",
-    url: "@import url('https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap');",
+    family: "'Literata', Georgia, serif",
+    fontKey: "Literata",
+    file: "Literata.woff2",
     spacing: "1.65",
     variable: true,
   },
   {
     name: "EB Garamond",
-    family: "'EB Garamond', serif",
-    url: "@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');",
+    family: "'EB Garamond', Georgia, serif",
+    fontKey: "EB Garamond",
+    file: "EBGaramond.woff2",
     spacing: "1.7",
     variable: true,
   },
   {
     name: "Palatino",
     family: "'Palatino', 'Palatino Linotype', 'Book Antiqua', Georgia, serif",
-    url: "",
+    fontKey: "",
+    file: "",
     spacing: "1.65",
     variable: false,
   },
   {
     name: "Lora",
-    family: "'Lora', serif",
-    url: "@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap');",
+    family: "'Lora', Georgia, serif",
+    fontKey: "Lora",
+    file: "Lora.woff2",
     spacing: "1.65",
     variable: true,
   },
 ];
+
+function buildLocalFontFaceCSS(fontObj) {
+  if (!fontObj || !fontObj.file || !fontObj.fontKey) return "";
+  if (typeof chrome === "undefined" || !chrome.runtime || !chrome.runtime.getURL) return "";
+  const localAssetUrl = chrome.runtime.getURL("fonts/" + fontObj.file);
+  return (
+    "@font-face { font-family: '" +
+    fontObj.fontKey +
+    "'; src: url('" +
+    localAssetUrl +
+    "') format('woff2'); font-weight: 100 900; font-style: normal; font-display: swap; } "
+  );
+}
+
+// -------------------------------------------------------------
+// 100% Local Offline Text-To-Speech Engine (Blocks Cloud Voices)
+// -------------------------------------------------------------
+function speakTextLocally(rawText) {
+  if (!isTopFrame || !rawText || !("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(rawText);
+  const allVoices = window.speechSynthesis.getVoices() || [];
+  const strictlyLocalVoices = allVoices.filter((v) => v.localService === true);
+
+  if (strictlyLocalVoices.length > 0) {
+    const preferredVoice =
+      strictlyLocalVoices.find(
+        (v) => v.lang && v.lang.toLowerCase().startsWith("en") && v.default
+      ) ||
+      strictlyLocalVoices.find((v) => v.lang && v.lang.toLowerCase().startsWith("en")) ||
+      strictlyLocalVoices[0];
+    utterance.voice = preferredVoice;
+  }
+
+  window.speechSynthesis.speak(utterance);
+}
 
 // -------------------------------------------------------------
 // Non-Intrusive 20-Minute Calibration Toast Banner
@@ -920,10 +977,9 @@ function resolveActiveLoadout(state) {
 }
 
 // -------------------------------------------------------------
-// The Master Typography Engine (Includes Kindle Cloud Reader Iframe & Shadow Piercer)
+// The Master Typography Engine (100% Local @font-face + Kindle Piercer)
 // -------------------------------------------------------------
 function injectStyleIntoNestedTargets(cssText) {
-  // 1. Pierce accessible same-origin iframes (e.g., Kindle Cloud Reader book panes)
   document.querySelectorAll("iframe").forEach((frame) => {
     try {
       const doc = frame.contentDocument;
@@ -1018,9 +1074,10 @@ function applyTypographyEngine(manifestState, resolved) {
 
   const headTarget = document.head || document.documentElement;
   const familyRule = activeFontObj.family ? "font-family: " + activeFontObj.family + " !important;" : "";
+  const localFontFaceRule = buildLocalFontFaceCSS(activeFontObj);
 
   const compiledCSS =
-    activeFontObj.url +
+    localFontFaceRule +
     " " +
     paintTarget +
     " { " +
@@ -1069,7 +1126,6 @@ function evaluateAdaptiveContrast(state, resolved) {
   document.documentElement.style.setProperty("--cloudy-font-weight", targetWeight);
   document.documentElement.style.setProperty("--cloudy-kinetic-weight", targetKineticWeight);
 
-  // Sync CSS variables into accessible same-origin iframes
   document.querySelectorAll("iframe").forEach((frame) => {
     try {
       if (frame.contentDocument && frame.contentDocument.documentElement) {
@@ -1084,7 +1140,7 @@ function evaluateAdaptiveContrast(state, resolved) {
 }
 
 // -------------------------------------------------------------
-// Kinetic Focus Engine (With DOM Guard to Prevent Re-Split Lag)
+// Kinetic Focus Engine
 // -------------------------------------------------------------
 function applyKineticFocus(state, resolved, allowMutationScan = false) {
   let useKinetic = state.kineticFocus;
@@ -1383,9 +1439,7 @@ chrome.runtime.onMessage.addListener((payload, sender, callback) => {
     if (callback) callback({ success: true });
   } else if (payload.action === "execute-tts" && payload.text) {
     if (isTopFrame && cachedCloudyState && cachedCloudyState.enabledTiles.includes("tts")) {
-      window.speechSynthesis.cancel();
-      let speechObject = new SpeechSynthesisUtterance(payload.text);
-      window.speechSynthesis.speak(speechObject);
+      speakTextLocally(payload.text);
     }
     if (callback) callback({ success: true });
   }
