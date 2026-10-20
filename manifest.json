@@ -7,9 +7,16 @@
   "background": {
     "service_worker": "background.js"
   },
+  "icons": {
+    "16": "gemini-svg.png",
+    "32": "gemini-svg.png",
+    "48": "gemini-svg.png",
+    "128": "gemini-svg.png"
+  },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Cloudy Reader"
+    "default_title": "Cloudy Reader",
+    "default_icon": "gemini-svg.png"
   },
   "content_scripts": [
     {
