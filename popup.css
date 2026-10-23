@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Cloudy Reader ☁️ Unified Stylesheet (v1.7 Wireframe Lamp + Muted UI Harmony)
+   Cloudy Reader ☁️ Unified Stylesheet (v1.8 True 17px Pixel-Locked Master UI)
    ========================================================================= */
 @font-face {
   font-family: "Source Sans 3";
@@ -192,6 +192,13 @@
   text-rendering: optimizeLegibility;
 }
 
+/* ==========================================================================
+   MASTER 17px ROOT & 560x460 CHASSIS LOCK (Matches Your Exact Rig Ratio)
+   ========================================================================== */
+html {
+  font-size: 17px !important;
+}
+
 html,
 body {
   width: 560px;
@@ -311,14 +318,14 @@ body.expanded-journal .adobe-workspace {
   gap: 6px;
 }
 .acc-arrow {
-  font-size: 0.72rem;
+  font-size: 12.24px;
   color: var(--text-muted);
   width: 10px;
   display: inline-block;
   transition: color 0.15s ease;
 }
 .accordion-header .panel-label {
-  font-size: 0.62rem;
+  font-size: 10.54px;
   font-weight: 700;
   letter-spacing: 0.7px;
   color: var(--text-muted);
@@ -359,7 +366,7 @@ body.expanded-journal .adobe-workspace {
   justify-content: flex-start;
   gap: 7px;
   padding: 6px 8px !important;
-  font-size: 0.64rem !important;
+  font-size: 10.88px !important;
   font-weight: 600 !important;
   color: var(--text-muted) !important;
 }
@@ -407,7 +414,7 @@ body.expanded-journal .adobe-workspace {
   border-bottom: none;
   color: var(--text-muted);
   font-family: "Ubuntu Sans Mono", "Cascadia Mono", monospace;
-  font-size: 0.54rem;
+  font-size: 9.18px;
   font-weight: 500;
   padding: 3px 8px;
   border-radius: 4px 4px 0 0;
@@ -438,7 +445,7 @@ body.expanded-journal .adobe-workspace {
   background-color: var(--bg-tile);
   border: 1px solid var(--bg-border);
   color: var(--text-muted);
-  font-size: 0.65rem;
+  font-size: 11.05px;
   font-weight: 600;
   border-radius: 3px;
   cursor: pointer;
@@ -481,7 +488,7 @@ body.expanded-journal .adobe-workspace {
   border-radius: 3px;
   color: #d4d4d8;
   font-family: "Ubuntu Sans Mono", "Cascadia Mono", monospace;
-  font-size: 0.56rem;
+  font-size: 9.52px;
   font-weight: 500;
   padding: 1px 6px;
   outline: none;
@@ -497,7 +504,7 @@ body.expanded-journal .adobe-workspace {
   border-radius: 3px;
   color: #d4d4d8;
   font-family: "Ubuntu Sans Mono", "Cascadia Mono", monospace;
-  font-size: 0.53rem;
+  font-size: 9.01px;
   font-weight: 500;
   cursor: pointer;
   flex-shrink: 0;
@@ -523,7 +530,7 @@ body.expanded-journal .adobe-workspace {
   border: none;
   color: #d4d4d8;
   font-family: "Ubuntu Sans Mono", "Cascadia Mono", monospace;
-  font-size: 0.64rem;
+  font-size: 10.88px;
   font-weight: 500;
   line-height: 1.45;
   padding: 8px 10px;
@@ -548,7 +555,7 @@ body.expanded-journal .cloudy-notes-textarea {
   background-color: var(--bg-main);
   border-top: 1px solid var(--bg-border);
   font-family: "Ubuntu Sans Mono", "Cascadia Mono", monospace;
-  font-size: 0.54rem;
+  font-size: 9.18px;
   font-weight: 500;
   color: var(--text-muted);
   letter-spacing: 0.3px;
@@ -559,7 +566,7 @@ body.expanded-journal .cloudy-notes-textarea {
   border: 1px solid var(--bg-border);
   border-radius: 3px;
   padding: 2px 8px;
-  font-size: 0.55rem;
+  font-size: 9.35px;
   font-weight: 600;
   color: var(--text-muted);
   opacity: 0.8;
@@ -612,17 +619,17 @@ body.expanded-journal .cloudy-notes-textarea {
   flex-shrink: 0;
 }
 .cust-sec-title {
-  font-size: 0.58rem;
+  font-size: 9.86px;
   font-weight: 700;
   color: var(--text-muted);
   letter-spacing: 0.5px;
   white-space: nowrap;
 }
 #activeThemeDisplay {
-  font-size: 0.6rem !important;
+  font-size: 10.2px !important;
 }
 .cust-icon-btn {
-  font-size: 0.78rem !important;
+  font-size: 13.26px !important;
   font-weight: 800 !important;
   color: var(--app-accent);
   padding: 2px 0 !important;
@@ -664,7 +671,7 @@ body.expanded-journal .cloudy-notes-textarea {
 }
 .header-title {
   color: #d4d4d8;
-  font-size: 0.85rem;
+  font-size: 14.45px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -680,7 +687,7 @@ body.expanded-journal .cloudy-notes-textarea {
 }
 .panel-label {
   color: var(--text-muted);
-  font-size: 0.62rem;
+  font-size: 10.54px;
   font-weight: 700;
   letter-spacing: 0.7px;
   display: flex;
@@ -718,7 +725,7 @@ body.expanded-journal .cloudy-notes-textarea {
 }
 .tint-cycle-arrow,
 .tint-cycle-pill.active .tint-cycle-arrow {
-  font-size: 0.5rem;
+  font-size: 8.5px;
   color: var(--text-muted) !important;
   padding: 0 2px;
   line-height: 1;
@@ -730,7 +737,7 @@ body.expanded-journal .cloudy-notes-textarea {
 }
 .tint-cycle-label,
 .tint-cycle-pill.active .tint-cycle-label {
-  font-size: 0.58rem;
+  font-size: 9.86px;
   font-weight: 600;
   color: var(--text-muted) !important;
   text-align: center;
@@ -739,10 +746,11 @@ body.expanded-journal .cloudy-notes-textarea {
 }
 
 /* ==========================================================================
-   FULL-HEIGHT RIGHT-COLUMN HUD INSPECTOR (Clock Color Matched to HUD Text)
+   FULL-HEIGHT RIGHT-COLUMN HUD INSPECTOR (Zero Italics Anywhere in HUD)
    ========================================================================== */
 .disclaimer.right-hud {
-  font-size: 0.62rem;
+  font-size: 10.54px;
+  font-style: normal !important;
   color: var(--text-muted);
   text-align: left;
   padding: 6px 11px 8px 11px;
@@ -756,6 +764,9 @@ body.expanded-journal .cloudy-notes-textarea {
   overflow: hidden;
   gap: 5px;
 }
+.disclaimer.right-hud * {
+  font-style: normal !important;
+}
 .hud-clock-bar {
   display: flex;
   align-items: center;
@@ -763,7 +774,7 @@ body.expanded-journal .cloudy-notes-textarea {
   padding-bottom: 4px;
   border-bottom: 1px solid var(--bg-border);
   font-family: "Ubuntu Sans Mono", "Cascadia Mono", monospace;
-  font-size: 0.53rem;
+  font-size: 9.01px;
   font-weight: 500;
   color: var(--text-muted);
   letter-spacing: 0.4px;
@@ -784,19 +795,22 @@ body.expanded-journal .cloudy-notes-textarea {
 }
 .disclaimer.active-tooltip {
   color: #d4d4d8;
-  font-size: 0.63rem;
+  font-size: 10.71px;
   font-weight: 500;
+  font-style: normal !important;
   border-top: 1px solid var(--app-accent);
 }
 .disclaimer.pinned-agenda {
   color: var(--text-muted);
-  font-size: 0.62rem;
+  font-size: 10.54px;
   font-weight: 500;
+  font-style: normal !important;
 }
 .hud-header {
   display: block;
-  font-size: 0.62rem;
+  font-size: 10.54px;
   font-weight: 700;
+  font-style: normal !important;
   letter-spacing: 0.4px;
   margin-bottom: 3px;
   color: #d4d4d8;
@@ -806,11 +820,12 @@ body.expanded-journal .cloudy-notes-textarea {
 }
 .hud-font-name {
   font-weight: 700;
+  font-style: normal !important;
   color: var(--app-accent);
 }
 .hud-lore {
   display: block;
-  font-style: italic;
+  font-style: normal !important;
   font-weight: 500;
   color: #d4d4d8;
   line-height: 1.38;
@@ -819,7 +834,7 @@ body.expanded-journal .cloudy-notes-textarea {
 }
 .hud-agenda-text {
   display: block;
-  font-style: normal;
+  font-style: normal !important;
   font-weight: 500;
   color: var(--text-muted);
   line-height: 1.4;
@@ -842,6 +857,7 @@ body.expanded-journal .cloudy-notes-textarea {
   white-space: normal;
   text-align: left;
   line-height: 1.4;
+  font-style: normal !important;
   will-change: transform;
   animation: scroll-text-vertical 20s linear infinite;
 }
@@ -981,7 +997,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   background-color: var(--bg-tile);
   border: 1px solid var(--bg-border);
   color: var(--text-muted) !important;
-  font-size: 0.6rem;
+  font-size: 10.2px;
   font-weight: 600;
   padding: 2px 6px;
   border-radius: 3px;
@@ -997,7 +1013,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   background-color: var(--bg-main);
   border: 1px solid var(--bg-border);
   color: #d4d4d8;
-  font-size: 0.55rem;
+  font-size: 9.35px;
   font-weight: 600;
   padding: 2px 5px;
   border-radius: 4px;
@@ -1020,7 +1036,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .vault-select {
   appearance: none;
   text-align: center;
-  font-size: 0.55rem !important;
+  font-size: 9.35px !important;
   font-weight: 600 !important;
   background-color: var(--bg-main);
   border: 1px solid var(--bg-border);
@@ -1038,7 +1054,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
 
 .vault-btn-ellipsis {
   background-color: var(--bg-main);
-  font-size: 0.55rem !important;
+  font-size: 9.35px !important;
   font-weight: 600 !important;
   padding: 2px 3px !important;
   height: 22px;
@@ -1053,7 +1069,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   height: 21px;
   padding: 0 7px;
   border-radius: 4px;
-  font-size: 0.53rem;
+  font-size: 9.01px;
   font-weight: 700;
   letter-spacing: 0.3px;
   line-height: 1;
@@ -1100,7 +1116,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   border-color: #fff;
 }
 .custom-tint-val {
-  font-size: 0.53rem;
+  font-size: 9.01px;
   font-weight: 700;
   color: var(--text-muted);
   min-width: 24px;
@@ -1119,7 +1135,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   border: 1px solid var(--bg-border);
   color: var(--text-muted);
   padding: 3px 4px;
-  font-size: 0.65rem;
+  font-size: 11.05px;
   font-weight: 600;
   cursor: pointer;
   border-radius: 4px;
@@ -1171,7 +1187,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   border: 1px solid var(--bg-border);
   border-bottom: none;
   color: var(--text-muted);
-  font-size: 0.56rem;
+  font-size: 9.52px;
   font-weight: 700;
   padding: 5px 2px;
   border-radius: 4px 4px 0 0;
@@ -1212,7 +1228,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   background: var(--bg-main);
   border: 1px solid var(--bg-border);
   color: var(--text-muted);
-  font-size: 0.64rem;
+  font-size: 10.88px;
   font-weight: 600;
   padding: 5px 8px;
   border-radius: 4px;
@@ -1235,7 +1251,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   min-width: 0;
 }
 .custom-col-title {
-  font-size: 0.52rem;
+  font-size: 8.84px;
   font-weight: 800;
   letter-spacing: 0.5px;
   color: var(--text-muted);
@@ -1251,7 +1267,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   gap: 1px;
 }
 .static-set-tag {
-  font-size: 0.45rem;
+  font-size: 7.65px;
   font-weight: 800;
   letter-spacing: 0.4px;
   color: var(--text-muted);
@@ -1262,7 +1278,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   color: #ffffff !important;
 }
 .static-set-name {
-  font-size: 0.63rem;
+  font-size: 10.71px;
   font-weight: 600;
   color: #d4d4d8;
   white-space: nowrap;
@@ -1271,7 +1287,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   width: 100%;
 }
 #createCustomSetBtn {
-  font-size: 0.56rem;
+  font-size: 9.52px;
   font-weight: 700;
   padding: 4px 5px;
   color: var(--app-accent);
@@ -1289,7 +1305,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
 }
 .tactical-dots {
   writing-mode: vertical-rl;
-  font-size: 0.5rem;
+  font-size: 8.5px;
   color: var(--text-muted);
   letter-spacing: 2.5px;
   line-height: 1;
@@ -1343,13 +1359,13 @@ input[type="range"]:hover::-webkit-slider-thumb {
   margin-top: -4px;
 }
 .am-title {
-  font-size: 0.45rem;
+  font-size: 7.65px;
   font-weight: 800;
   letter-spacing: 0.4px;
   color: var(--text-muted);
 }
 .am-value {
-  font-size: 0.63rem;
+  font-size: 10.71px;
   font-weight: 600;
   color: #d4d4d8;
   white-space: nowrap;
@@ -1366,7 +1382,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   border: 1px solid var(--bg-border);
   border-radius: 3px;
   padding: 0px 5px;
-  font-size: 0.58rem;
+  font-size: 9.86px;
   font-weight: 800;
   z-index: 3;
   line-height: 1.2;
@@ -1396,7 +1412,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   cursor: pointer;
 }
 .sensory-name {
-  font-size: 0.66rem;
+  font-size: 11.22px;
   font-weight: 600;
   color: var(--text-muted);
   user-select: none;
@@ -1406,7 +1422,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   color: #d4d4d8;
 }
 .hz-inline-readout {
-  font-size: 0.52rem;
+  font-size: 8.84px;
   color: var(--text-muted);
   margin-left: 4px;
   font-weight: 800;
@@ -1443,7 +1459,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   border: 1px solid var(--bg-border);
   border-radius: 3px;
   color: var(--text-muted);
-  font-size: 0.58rem;
+  font-size: 9.86px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -1576,7 +1592,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
   position: relative;
 }
 
-/* Thin Wireframe Go Back Button (No solid box fill) */
 .ambient-back-btn {
   position: absolute;
   top: 12px;
@@ -1588,7 +1603,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   padding: 5px 12px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.72rem;
+  font-size: 12.24px;
   font-weight: 700;
   transition: all 0.2s ease;
 }
@@ -1662,11 +1677,10 @@ input[type="range"]:hover::-webkit-slider-thumb {
   pointer-events: none;
 }
 
-/* Frameless Lamp Titles (Matched to Fullscreen Mode - Zero Box) */
 .zone-title {
   color: rgba(0, 0, 0, 0.85);
   font-weight: 700;
-  font-size: 1.35rem;
+  font-size: 22.95px;
   pointer-events: auto;
   background: transparent !important;
   border: none !important;
@@ -1677,7 +1691,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
   color: #ffffff;
 }
 
-/* Thin Wireframe Hub Enter Button */
 .hub-enter-btn {
   margin-top: 6px;
   padding: 5px 14px;
@@ -1685,7 +1698,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
   border: 1px solid rgba(0, 0, 0, 0.45);
   color: rgba(0, 0, 0, 0.85);
   font-weight: 700;
-  font-size: 0.68rem;
+  font-size: 11.56px;
   border-radius: 6px;
   cursor: pointer;
   pointer-events: auto;
@@ -1715,14 +1728,13 @@ input[type="range"]:hover::-webkit-slider-thumb {
   opacity: 0;
 }
 
-/* Frameless Bottom Exit Instruction Text (Matched to Fullscreen Mode - Zero Box) */
 .glt-close-text {
   position: absolute;
   bottom: 12px;
   left: 50%;
   transform: translateX(-50%);
   font-weight: 600;
-  font-size: 0.74rem;
+  font-size: 12.58px;
   color: rgba(0, 0, 0, 0.65);
   background: transparent !important;
   border: none !important;
@@ -1783,7 +1795,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
   display: block;
 }
 
-/* Thin Wireframe Lamp Mode Buttons (Matched to Fullscreen Mode) */
 .glt-tile {
   display: flex;
   flex-direction: column;
@@ -1800,14 +1811,14 @@ input[type="range"]:hover::-webkit-slider-thumb {
 }
 .glt-tile .tile-label {
   color: rgba(0, 0, 0, 0.65);
-  font-size: 0.62rem;
+  font-size: 10.54px;
   font-weight: 700;
   pointer-events: none;
   transition: color 0.2s ease;
 }
 .glt-tile .hz-readout {
   color: rgba(0, 0, 0, 0.55);
-  font-size: 0.56rem;
+  font-size: 9.52px;
   font-weight: 600;
   pointer-events: none;
   margin-top: 2px;
@@ -1835,14 +1846,13 @@ input[type="range"]:hover::-webkit-slider-thumb {
   color: #ffffff !important;
 }
 
-/* Thin Wireframe Expand Window & Full Screen Action Buttons */
 .glt-action-btn {
   padding: 6px 14px;
   background: transparent !important;
   border: 1px solid rgba(0, 0, 0, 0.45);
   color: rgba(0, 0, 0, 0.85);
   font-weight: 700;
-  font-size: 0.72rem;
+  font-size: 12.24px;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1862,7 +1872,6 @@ html.expanded-lamp #ambientFullScreenBtn {
   display: block;
 }
 
-/* THE LIGHT KITCHEN (Thin Wireframe Aesthetic) */
 .kitchen-zone {
   padding: 14px;
   display: flex;
@@ -1892,11 +1901,11 @@ html.expanded-lamp #ambientFullScreenBtn {
 .kitchen-main-title {
   color: rgba(0, 0, 0, 0.88);
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 17.85px;
 }
 .kitchen-subtitle {
   color: rgba(0, 0, 0, 0.75);
-  font-size: 0.64rem;
+  font-size: 10.88px;
   font-weight: 600;
   text-align: left;
 }
@@ -1909,7 +1918,7 @@ html.expanded-lamp #ambientFullScreenBtn {
   background: transparent !important;
   border: 1px solid rgba(0, 0, 0, 0.35);
   color: rgba(0, 0, 0, 0.75);
-  font-size: 0.62rem;
+  font-size: 10.54px;
   font-weight: 700;
   padding: 6px 0;
   border-radius: 4px;
@@ -1945,12 +1954,12 @@ html.expanded-lamp #ambientFullScreenBtn {
   gap: 2px;
 }
 .readout-label {
-  font-size: 0.48rem;
+  font-size: 8.16px;
   font-weight: 800;
   color: rgba(0, 0, 0, 0.65);
 }
 .readout-val {
-  font-size: 0.64rem;
+  font-size: 10.88px;
   font-weight: 700;
   color: rgba(0, 0, 0, 0.9);
 }
@@ -1965,14 +1974,14 @@ html.expanded-lamp #ambientFullScreenBtn {
   gap: 8px;
 }
 .ks-label {
-  font-size: 0.62rem;
+  font-size: 10.54px;
   color: rgba(0, 0, 0, 0.85);
   width: 100px;
   font-weight: 700;
   text-align: left;
 }
 .ks-val-badge {
-  font-size: 0.64rem;
+  font-size: 10.88px;
   font-weight: 700;
   color: rgba(0, 0, 0, 0.9);
   background: transparent !important;
@@ -1995,7 +2004,7 @@ html.expanded-lamp #ambientFullScreenBtn {
 }
 .manifesto-header {
   color: #d4d4d8;
-  font-size: 0.62rem;
+  font-size: 10.54px;
   font-weight: 700;
   letter-spacing: 0.7px;
   text-transform: uppercase;
@@ -2006,7 +2015,7 @@ html.expanded-lamp #ambientFullScreenBtn {
 }
 .manifesto-body {
   color: var(--text-muted);
-  font-size: 0.56rem;
+  font-size: 9.52px;
   line-height: 1.35;
   font-weight: 500;
 }
@@ -2022,7 +2031,7 @@ html.expanded-lamp #ambientFullScreenBtn {
 }
 .cycle-arrow {
   color: var(--text-muted);
-  font-size: 0.64rem;
+  font-size: 10.88px;
   cursor: pointer;
   user-select: none;
   display: inline-block;
