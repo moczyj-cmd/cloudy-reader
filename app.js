@@ -1,27 +1,25 @@
 /**
  * ==========================================================================
- * Cloudy Reader ☁️ Synchronized Engine & State Persistence Layer
+ * Cloudy Reader ☁️ Synchronized Engine & State Persistence Layer (v1.6 Master)
  * ==========================================================================
  */
 
 const DEFAULT_STATIC_SETS = {
-  // Static Set 1: Streamline (Atkinson Next, Size 14, Green UI, Contrast ON)
   static1: {
     name: "Streamline",
     font: 3,
     size: 14,
-    theme: 2,
+    theme: 6, // 6 = Blue
     kinetic: false,
     contrast: true,
     tint: "off",
     tintIntensity: 0,
   },
-  // Static Set 2: E-Reader (Literata, Size 17, Purple UI, Contrast ON)
   static2: {
     name: "E-Reader",
     font: 17,
     size: 17,
-    theme: 3,
+    theme: 6, // 6 = Blue
     kinetic: false,
     contrast: true,
     tint: "off",
@@ -30,9 +28,8 @@ const DEFAULT_STATIC_SETS = {
 };
 
 const DEFAULT_AUTOMATCH_SETS = {
-  // Auto-Match 1: Studio Pro UI | Light: Paper (Ubuntu 12, Amber 17%) ⮀ Dark: Dark BG (IBM Plex Mono 12, Blackout 24%, Kinetic ON)
   autoMatch1: {
-    theme: 1, // Studio Pro
+    theme: 5, // 5 = Orange (Unicorn Theme)
     light: {
       name: "Paper",
       font: 4,
@@ -52,9 +49,8 @@ const DEFAULT_AUTOMATCH_SETS = {
       tintIntensity: 24,
     },
   },
-  // Auto-Match 2: Orange UI | Light: Scholar Day (Lora 17, Amber 12%) ⮀ Dark: Night Study (Atkinson Next 14, Blackout 18%)
   autoMatch2: {
-    theme: 5, // Orange
+    theme: 5, // 5 = Orange (Unicorn Theme)
     light: {
       name: "Scholar Day",
       font: 20,
@@ -76,19 +72,27 @@ const DEFAULT_AUTOMATCH_SETS = {
   },
 };
 
+const DEFAULT_JOURNAL_TABS = [
+  { id: 1, title: "Daily Agenda", content: "" },
+  { id: 2, title: "Study Notes", content: "" },
+];
+
 const THEME_ID_MAP = ["", "studio-pro", "green", "purple", "dark", "orange", "blue"];
 const TINT_MODES = ["off", "red", "amber", "blackout"];
+const TINT_LABELS = { off: "Off", red: "Red", amber: "Amber", blackout: "Blackout" };
 const MAX_NOTES_CHARS = 2000;
+const MAX_JOURNAL_TABS = 15;
 
 const CloudyEngine = {
   activeTabIsDark: false,
   kitchenPulseTick: null,
+  hudClockInterval: null,
 
   state: {
-    rosterVersion: 11,
-    selectedTint: "red",
-    shieldIntensity: 45,
-    curatedThemeIndex: 0, // 0=Native, 1-20=Fonts, 21=Static1, 22=Static2, 23=AutoMatch1, 24=AutoMatch2
+    rosterVersion: 16,
+    selectedTint: "off",
+    shieldIntensity: 0,
+    curatedThemeIndex: 0,
     fontSizeIndex: 0,
     sizeMatrix: [14, 17, 22],
     enabledTiles: [],
@@ -96,8 +100,11 @@ const CloudyEngine = {
     previousUiTheme: "blue",
     adaptiveContrast: false,
     kineticFocus: false,
+
     userNotes: "",
     notesInHud: false,
+    journalTabs: JSON.parse(JSON.stringify(DEFAULT_JOURNAL_TABS)),
+    activeJournalTabId: 1,
 
     static1: JSON.parse(JSON.stringify(DEFAULT_STATIC_SETS.static1)),
     static2: JSON.parse(JSON.stringify(DEFAULT_STATIC_SETS.static2)),
@@ -216,11 +223,12 @@ const CloudyEngine = {
 
   nodes: {},
   originalDisclaimerText:
-    "<strong>Cloudy Reader ☁️ Ergonomic Baseline</strong><br> This is a client-side environmental customization utility designed to optimize visual comfort and reduce screen friction. It is not a medical device and is not intended to diagnose, treat, cure, or prevent any clinical condition. <strong>By using this extension, you acknowledge and agree to these terms.</strong>",
+    "<strong>Cloudy Reader ☁️ Ergonomic Baseline</strong><br> This is a client-side environmental customization utility designed to optimize visual comfort and reduce screen friction. It is not a medical device or ADA compliance overlay, and is not intended to diagnose, treat, cure, or prevent any clinical condition. <strong>By using this extension, you acknowledge and agree to these terms.</strong>",
 
   init() {
     this.cacheDOM();
     this.closeAllAccordions();
+    this.startLiveHudClock();
     this.bindEvents();
     this.hydrateSilo();
     this.updateDeckCustomButtons();
@@ -234,16 +242,22 @@ const CloudyEngine = {
     this.nodes.kineticFocusBtn = document.getElementById("kineticFocusBtn");
     this.nodes.adaptiveContrastBtn = document.getElementById("adaptiveContrastBtn");
     this.nodes.fontModeCycleBtn = document.getElementById("fontModeCycleBtn");
-
     this.nodes.createCustomSetBtn = document.getElementById("createCustomSetBtn");
 
     this.nodes.accordionSections = document.querySelectorAll(".accordion-section");
     this.nodes.accordionHeaders = document.querySelectorAll(".accordion-header[data-acc-target]");
     this.nodes.lampQuickBtns = document.querySelectorAll(".lamp-quick-btn[data-lamp-Quick]");
 
+    this.nodes.journalTabsList = document.getElementById("journalTabsList");
+    this.nodes.journalAddTabBtn = document.getElementById("journalAddTabBtn");
+    this.nodes.journalExpandBtn = document.getElementById("journalExpandBtn");
+    this.nodes.journalTabTitleInput = document.getElementById("journalTabTitleInput");
+    this.nodes.journalExportMdBtn = document.getElementById("journalExportMdBtn");
+    this.nodes.journalDeleteTabBtn = document.getElementById("journalDeleteTabBtn");
     this.nodes.cloudyNotesArea = document.getElementById("cloudyNotesArea");
     this.nodes.notesCharCount = document.getElementById("notesCharCount");
     this.nodes.notesHudToggleBtn = document.getElementById("notesHudToggleBtn");
+    this.nodes.hudClockReadout = document.getElementById("hudClockReadout");
 
     this.nodes.themePrev = document.getElementById("themePrev");
     this.nodes.themeNext = document.getElementById("themeNext");
@@ -293,11 +307,15 @@ const CloudyEngine = {
     this.nodes.html = document.documentElement;
     this.nodes.shieldSlider = document.getElementById("shield-slider");
     this.nodes.intensityDisplay = document.getElementById("intensityValue");
+    this.nodes.tintCyclePill = document.getElementById("tintCyclePill");
+    this.nodes.tintCyclePrev = document.getElementById("tintCyclePrev");
+    this.nodes.tintCycleLabel = document.getElementById("tintCycleLabel");
+    this.nodes.tintCycleNext = document.getElementById("tintCycleNext");
+
     this.nodes.folderTabs = document.querySelectorAll(".folder-tab");
     this.nodes.fontRosters = document.querySelectorAll(".font-roster");
     this.nodes.fontBtns = document.querySelectorAll(".font-btn");
     this.nodes.sensoryRows = document.querySelectorAll(".sensory-row[data-tile-id]");
-    this.nodes.tintBtns = document.querySelectorAll(".tint-btn[data-tint]");
     this.nodes.hzReadout = document.getElementById("hzReadout");
 
     this.nodes.ambientToggle = document.getElementById("ambientToggle");
@@ -307,6 +325,7 @@ const CloudyEngine = {
     this.nodes.blueZone = document.getElementById("blueZone");
     this.nodes.amberZone = document.getElementById("amberZone");
     this.nodes.kitchenZone = document.getElementById("kitchenZone");
+    this.nodes.kitchenBg = document.getElementById("kitchenBg");
     this.nodes.lampClickLayers = document.querySelectorAll(".lamp-click-layer");
     this.nodes.ambientExpandBtn = document.getElementById("ambientExpandBtn");
     this.nodes.ambientFullScreenBtn = document.getElementById("ambientFullScreenBtn");
@@ -341,12 +360,58 @@ const CloudyEngine = {
     this.nodes.masterPowerBtn = document.getElementById("masterPowerBtn");
   },
 
+  // Calm Live System Clock (Seconds Removed for Zero Distraction)
+  startLiveHudClock() {
+    const updateClock = () => {
+      if (!this.nodes.hudClockReadout) return;
+      const now = new Date();
+      const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+      const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+      let hours = now.getHours();
+      const ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12;
+      if (hours === 0) hours = 12;
+      const minStr = String(now.getMinutes()).padStart(2, "0");
+
+      this.nodes.hudClockReadout.textContent =
+        days[now.getDay()] +
+        ", " +
+        months[now.getMonth()] +
+        " " +
+        now.getDate() +
+        ", " +
+        now.getFullYear() +
+        "  •  " +
+        hours +
+        ":" +
+        minStr +
+        " " +
+        ampm;
+    };
+    updateClock();
+    if (this.hudClockInterval) clearInterval(this.hudClockInterval);
+    this.hudClockInterval = setInterval(updateClock, 1000);
+  },
+
+  collapseExpandedJournal() {
+    document.documentElement.classList.remove("expanded-journal");
+    document.body.classList.remove("expanded-journal");
+    if (this.nodes.journalExpandBtn) {
+      this.nodes.journalExpandBtn.classList.remove("active");
+    }
+    if (!document.documentElement.classList.contains("expanded-lamp")) {
+      if (this.nodes.html) this.nodes.html.style.width = "560px";
+      document.body.style.width = "560px";
+    }
+  },
+
   closeAllAccordions() {
     this.nodes.accordionSections.forEach((sec) => {
       sec.classList.remove("open");
       const arr = sec.querySelector(".acc-arrow");
       if (arr) arr.textContent = "▸";
     });
+    this.collapseExpandedJournal();
   },
 
   toggleAccordion(targetId, forceOpen = false) {
@@ -363,6 +428,17 @@ const CloudyEngine = {
     }
   },
 
+  updateTintCycleUI(tintMode) {
+    const cleanMode = TINT_LABELS[tintMode] ? tintMode : "off";
+    if (this.nodes.tintCycleLabel) {
+      this.nodes.tintCycleLabel.textContent = TINT_LABELS[cleanMode];
+    }
+    if (this.nodes.tintCyclePill) {
+      this.nodes.tintCyclePill.setAttribute("data-tint", cleanMode);
+      this.nodes.tintCyclePill.classList.toggle("active", cleanMode !== "off");
+    }
+  },
+
   escapeHTML(rawStr) {
     return String(rawStr || "")
       .replace(/&/g, "&amp;")
@@ -372,11 +448,74 @@ const CloudyEngine = {
       .replace(/'/g, "&#39;");
   },
 
+  ensureJournalTabsInitialized() {
+    if (!Array.isArray(this.state.journalTabs) || this.state.journalTabs.length === 0) {
+      const migratedContent = (this.state.userNotes || "").substring(0, MAX_NOTES_CHARS);
+      this.state.journalTabs = [
+        { id: 1, title: "Daily Agenda", content: migratedContent },
+        { id: 2, title: "Study Notes", content: "" },
+      ];
+      this.state.activeJournalTabId = 1;
+    }
+    const found = this.state.journalTabs.find((t) => t.id === this.state.activeJournalTabId);
+    if (!found) {
+      this.state.activeJournalTabId = this.state.journalTabs[0].id;
+    }
+  },
+
+  getActiveJournalTab() {
+    this.ensureJournalTabsInitialized();
+    return (
+      this.state.journalTabs.find((t) => t.id === this.state.activeJournalTabId) ||
+      this.state.journalTabs[0]
+    );
+  },
+
+  renderJournalUI() {
+    this.ensureJournalTabsInitialized();
+    const activeTab = this.getActiveJournalTab();
+
+    if (this.nodes.journalTabsList) {
+      this.nodes.journalTabsList.innerHTML = "";
+      this.state.journalTabs.forEach((tab, index) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "journal-ear-tab" + (tab.id === activeTab.id ? " active" : "");
+        btn.textContent = tab.title && tab.title.trim() ? tab.title.trim() : "Tab " + (index + 1);
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.state.activeJournalTabId = tab.id;
+          this.renderJournalUI();
+          if (this.state.notesInHud) {
+            this.restoreDefaultHUD();
+          }
+          if (typeof chrome !== "undefined" && chrome.storage) {
+            chrome.storage.local.set({ CloudyReader_ActiveManifest: this.state });
+          }
+        });
+        this.nodes.journalTabsList.appendChild(btn);
+      });
+    }
+
+    if (this.nodes.journalAddTabBtn) {
+      this.nodes.journalAddTabBtn.disabled = this.state.journalTabs.length >= MAX_JOURNAL_TABS;
+    }
+    if (this.nodes.journalTabTitleInput) {
+      this.nodes.journalTabTitleInput.value = activeTab.title || "";
+    }
+    if (this.nodes.cloudyNotesArea) {
+      this.nodes.cloudyNotesArea.value = activeTab.content || "";
+    }
+
+    this.updateNotesCounter(activeTab.content || "");
+    this.renderNotesHudBtn();
+  },
+
   updateNotesCounter(textVal) {
     const cleanText = (textVal || "").substring(0, MAX_NOTES_CHARS);
     if (this.nodes.notesCharCount) {
       this.nodes.notesCharCount.textContent =
-        String(cleanText.length) + " Characters / " + String(MAX_NOTES_CHARS) + " Characters";
+        String(cleanText.length) + " / " + String(MAX_NOTES_CHARS) + " Chars";
     }
   },
 
@@ -387,23 +526,78 @@ const CloudyEngine = {
     this.nodes.notesHudToggleBtn.textContent = isPinned ? "Remove from HUD?" : "Display in HUD?";
   },
 
+  exportActiveTabToMarkdown() {
+    const activeTab = this.getActiveJournalTab();
+    const rawTitle =
+      activeTab.title && activeTab.title.trim() ? activeTab.title.trim() : "Agenda-Note";
+    let safeFileName = rawTitle.toLowerCase().replace(/[^a-z0-9-_]+/g, "-");
+    while (safeFileName.startsWith("-")) {
+      safeFileName = safeFileName.substring(1);
+    }
+    while (safeFileName.endsWith("-")) {
+      safeFileName = safeFileName.substring(0, safeFileName.length - 1);
+    }
+    if (!safeFileName) safeFileName = "cloudy-note";
+
+    const now = new Date();
+    const dateStamp = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+    const mdBody =
+      "# " +
+      rawTitle +
+      "\n" +
+      "> Exported from Cloudy Reader Agenda Notebook (" +
+      dateStamp +
+      ")\n\n" +
+      (activeTab.content || "") +
+      "\n";
+
+    const blob = new Blob([mdBody], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = safeFileName + ".md";
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(() => {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, 250);
+
+    this.flashHUDAlert(
+      '<span class="hud-header">EXPORTED: <span class="hud-font-name">' +
+        this.escapeHTML(safeFileName) +
+        '.md</span></span><span class="hud-lore">Markdown file saved locally—ready for compatible journaling software.</span>'
+    );
+  },
+
   restoreDefaultHUD() {
     if (this.state.notesInHud) {
+      const activeTab = this.getActiveJournalTab();
+      const tabTitle =
+        activeTab.title && activeTab.title.trim() ? activeTab.title.trim() : "Agenda Notebook";
       const rawNotes =
-        this.state.userNotes && this.state.userNotes.trim()
-          ? this.state.userNotes.trim()
-          : "No notes written yet. Type inside the Notes tab to display your scratchpad here.";
+        activeTab.content && activeTab.content.trim()
+          ? activeTab.content.trim()
+          : "No items written in this tab yet. Type inside Agenda Notebook to display your live checklist or notes here.";
+      const safeTitle = this.escapeHTML(tabTitle);
       const safeNotes = this.escapeHTML(rawNotes);
-      const shouldScroll = rawNotes.length > 95 || rawNotes.split("\n").length > 3;
+      const lineCount = rawNotes.split("\n").length;
+      const shouldScroll = rawNotes.length > 135 || lineCount > 4;
+      const effectiveChars = Math.max(rawNotes.length, lineCount * 34);
+      const calmDurationSec = Math.max(20, Math.round((effectiveChars / 260) * 20));
+
       this.setHUDText(
-        '<span class="hud-header">NOTES: <span class="hud-font-name">Pinned Scratchpad</span></span><span class="hud-lore">' +
+        '<span class="hud-header">AGENDA: <span class="hud-font-name">' +
+          safeTitle +
+          '</span></span><span class="hud-agenda-text">' +
           safeNotes +
           "</span>",
-        true,
-        shouldScroll
+        "agenda",
+        shouldScroll,
+        calmDurationSec
       );
     } else {
-      this.setHUDText(this.originalDisclaimerText, false, false);
+      this.setHUDText(this.originalDisclaimerText, false, false, 20);
     }
   },
 
@@ -441,17 +635,21 @@ const CloudyEngine = {
     return ["aA", String(matrix[0]), String(matrix[1]), String(matrix[2])];
   },
 
-  setHUDText(htmlText, isAlert = false, scrollLore = false) {
+  setHUDText(htmlText, mode = false, scrollLore = false, durationSec = 20) {
     document.querySelectorAll(".disclaimer").forEach((container) => {
       const marquee = container.querySelector(".marquee-content");
       if (marquee) {
         marquee.innerHTML = htmlText;
-        marquee.classList.remove("no-scroll", "scroll-lore");
-        if (isAlert) {
+        marquee.classList.remove("no-scroll", "scroll-lore", "scroll-agenda");
+        container.classList.remove("active-tooltip", "pinned-agenda");
+
+        if (mode === "agenda") {
+          container.classList.add("pinned-agenda");
+          marquee.style.setProperty("--agenda-scroll-duration", String(durationSec || 20) + "s");
+          marquee.classList.add(scrollLore ? "scroll-agenda" : "no-scroll");
+        } else if (mode) {
           container.classList.add("active-tooltip");
           marquee.classList.add(scrollLore ? "scroll-lore" : "no-scroll");
-        } else {
-          container.classList.remove("active-tooltip");
         }
       }
     });
@@ -468,7 +666,6 @@ const CloudyEngine = {
   showFontLoreInHUD(fontIdx) {
     const idx = parseInt(fontIdx, 10) || 0;
 
-    // Static Sets 1 & 2 (Indices 21 & 22)
     if (idx === 21 || idx === 22) {
       const setNum = idx - 20;
       const setData = this.state["static" + setNum] || {};
@@ -491,12 +688,11 @@ const CloudyEngine = {
           loreStr +
           "</span>",
         true,
-        loreStr.length > 85
+        loreStr.length > 95
       );
       return;
     }
 
-    // Auto-Match Sets 1 & 2 (Indices 23 & 24)
     if (idx === 23 || idx === 24) {
       const amNum = idx - 22;
       const amData = this.state["autoMatch" + amNum] || DEFAULT_AUTOMATCH_SETS["autoMatch" + amNum];
@@ -528,7 +724,7 @@ const CloudyEngine = {
           loreStr +
           "</span>",
         true,
-        loreStr.length > 85
+        loreStr.length > 95
       );
       return;
     }
@@ -536,8 +732,6 @@ const CloudyEngine = {
     const fontName = this.customFonts[idx] || "Native UI";
     const zoneName = this.fontZones[idx] || "Typography";
     const story = this.themeOrigins[idx] || this.themeOrigins[0];
-    const shouldScroll = story.length > 85;
-
     this.setHUDText(
       '<span class="hud-header">INFO: <span class="hud-font-name">' +
         fontName +
@@ -547,7 +741,7 @@ const CloudyEngine = {
         story +
         "</span>",
       true,
-      shouldScroll
+      story.length > 95
     );
   },
 
@@ -586,7 +780,7 @@ const CloudyEngine = {
 
   updateHzReadout(mode) {
     if (!this.nodes.hzReadout) return;
-    const labels = ["OFF", "532HZ", "582HZ", "DUAL"];
+    const labels = ["OFF", "532HZ", "582HZ", "DUAL", "BROWN", "PULSE"];
     this.nodes.hzReadout.textContent = labels[mode] || "OFF";
   },
 
@@ -608,12 +802,11 @@ const CloudyEngine = {
     return "#9CE0FF";
   },
 
-  // Directly Renders & Animates Green, Blue, Amber, and Light Kitchen Backdrops Inside Popup & Expanded Views
   updateAmbientUI() {
     if (!this.nodes.ambientOverlay) return;
     this.nodes.ambientOverlay.setAttribute("data-view", this.ambient.view);
 
-    // 1. GREEN LAMP RENDERER (525nm / 545nm / BLEND / DUAL Checkerboard + 9 Static Lux Steps)
+    // 1. GREEN LAMP
     this.nodes.greenZone.setAttribute("data-mode", this.ambient.greenMode);
     this.nodes.greenZone.setAttribute("data-step", this.ambient.greenStep);
     this.nodes.btnGreenCycle.classList.remove("active");
@@ -634,13 +827,13 @@ const CloudyEngine = {
         this.nodes.lblGreenCycle.textContent = cycleMap[this.ambient.greenStep];
 
         if (this.ambient.greenStep === 1) {
-          greenBgEl.style.background = "#00FF00";
+          greenBgEl.style.backgroundColor = "#00FF00";
           greenBgEl.style.animation = "popupLampBreathe 8s infinite alternate ease-in-out";
         } else if (this.ambient.greenStep === 2) {
-          greenBgEl.style.background = "#7CFF00";
+          greenBgEl.style.backgroundColor = "#7CFF00";
           greenBgEl.style.animation = "popupLampBreathe 8s infinite alternate ease-in-out";
         } else if (this.ambient.greenStep === 3) {
-          greenBgEl.style.background = "#00FF00";
+          greenBgEl.style.backgroundColor = "#00FF00";
           greenBgEl.style.animation = "popupGltBlend 12s infinite alternate ease-in-out";
         } else if (this.ambient.greenStep === 4) {
           greenBgEl.style.backgroundColor = "#00FF00";
@@ -671,7 +864,7 @@ const CloudyEngine = {
             "conic-gradient(#7CFF00 90deg, transparent 90deg 180deg, #7CFF00 180deg 270deg, transparent 270deg)";
           greenBgEl.style.backgroundSize = "48px 48px";
         } else {
-          greenBgEl.style.background = step <= 3 ? "#00FF00" : "#7CFF00";
+          greenBgEl.style.backgroundColor = step <= 3 ? "#00FF00" : "#7CFF00";
         }
         const luxLevels = {
           1: 0.28,
@@ -688,7 +881,7 @@ const CloudyEngine = {
       }
     }
 
-    // 2. BLUE LAMP RENDERER (480nm Static / 460nm Breathe / Cycle Blend)
+    // 2. BLUE LAMP
     this.nodes.blueZone.setAttribute("data-mode", this.ambient.blueMode);
     [this.nodes.btnBlueCoffee, this.nodes.btnBlueRezzed, this.nodes.btnBlueCycle].forEach((b) =>
       b.classList.remove("active")
@@ -700,19 +893,20 @@ const CloudyEngine = {
     const blueBgEl = this.nodes.blueZone ? this.nodes.blueZone.querySelector(".zone-bg") : null;
     if (blueBgEl) {
       blueBgEl.style.animation = "none";
+      blueBgEl.style.backgroundImage = "none";
       blueBgEl.style.filter = "none";
       if (this.ambient.blueMode === "coffee") {
-        blueBgEl.style.background = "#00BFFF";
+        blueBgEl.style.backgroundColor = "#00BFFF";
       } else if (this.ambient.blueMode === "rezzed") {
-        blueBgEl.style.background = "#0047FF";
+        blueBgEl.style.backgroundColor = "#0047FF";
         blueBgEl.style.animation = "popupLampBreathe 8s infinite alternate ease-in-out";
       } else if (this.ambient.blueMode === "cycle") {
-        blueBgEl.style.background = "#0047FF";
+        blueBgEl.style.backgroundColor = "#0047FF";
         blueBgEl.style.animation = "popupBltBlend 12s infinite alternate ease-in-out";
       }
     }
 
-    // 3. AMBER LAMP RENDERER (660nm Breathe / 2700K Static / Cone Breathe)
+    // 3. AMBER LAMP
     this.nodes.amberZone.setAttribute("data-mode", this.ambient.amberMode);
     [this.nodes.btnAmberBreathe, this.nodes.btnAmberStatic, this.nodes.btnAmberBlend].forEach((b) =>
       b.classList.remove("active")
@@ -724,25 +918,30 @@ const CloudyEngine = {
     const amberBgEl = this.nodes.amberZone ? this.nodes.amberZone.querySelector(".zone-bg") : null;
     if (amberBgEl) {
       amberBgEl.style.animation = "none";
+      amberBgEl.style.backgroundImage = "none";
       amberBgEl.style.filter = "none";
       if (this.ambient.amberMode === "static") {
-        amberBgEl.style.background = "#FFA657";
+        amberBgEl.style.backgroundColor = "#FFA657";
       } else if (this.ambient.amberMode === "blend") {
-        amberBgEl.style.background =
+        amberBgEl.style.backgroundImage =
           "radial-gradient(circle at 50% 50%, #FFA657 0%, #FF0000 82%)";
         amberBgEl.style.animation = "popupLampBreathe 8s infinite alternate ease-in-out";
       } else {
-        amberBgEl.style.background = "#FFA657";
+        amberBgEl.style.backgroundColor = "#FFA657";
         amberBgEl.style.animation = "popupAmberBlend 12s infinite alternate ease-in-out";
       }
     }
 
-    // 4. LIGHT KITCHEN LIVE SYNTHESIZER
+    // 4. LIGHT KITCHEN
     this.renderKitchenPopupBackdrop();
   },
 
   renderKitchenPopupBackdrop() {
-    if (!this.nodes.kitchenZone) return;
+    const kitchenBgEl =
+      this.nodes.kitchenBg ||
+      (this.nodes.kitchenZone ? this.nodes.kitchenZone.querySelector(".zone-bg") : null);
+    if (!kitchenBgEl) return;
+
     const primaryColor = this.wavelengthToHex(this.state.kitchenWl || 480);
     const activeSlotWls = [];
     this.nodes.kitchenSlots.forEach((btn) => {
@@ -753,24 +952,29 @@ const CloudyEngine = {
     });
 
     const secondaryColor =
+      activeSlotWls.length > 0
+        ? this.wavelengthToHex(activeSlotWls[0])
+        : this.kelvinToHex(this.state.kitchenTemp || 4600);
+    const tertiaryColor =
       activeSlotWls.length > 1
         ? this.wavelengthToHex(activeSlotWls[activeSlotWls.length - 1])
         : this.kelvinToHex(this.state.kitchenTemp || 4600);
     const outerColor = this.kelvinToHex(this.state.kitchenTemp || 4600);
+
     const gradientStr =
       "radial-gradient(circle at 50% 50%, " +
       primaryColor +
       " 0%, " +
       secondaryColor +
-      " 55%, " +
+      " 38%, " +
+      tertiaryColor +
+      " 72%, " +
       outerColor +
       " 100%)";
 
-    this.nodes.kitchenZone.style.setProperty("--kitchen-live-bg", gradientStr);
-    this.nodes.kitchenZone.style.setProperty(
-      "--kitchen-rhythm",
-      (this.state.kitchenRhythm || 12) + "s"
-    );
+    kitchenBgEl.style.backgroundImage = gradientStr;
+    kitchenBgEl.style.animation =
+      "popupLampBreathe " + (this.state.kitchenRhythm || 12) + "s infinite alternate ease-in-out";
 
     if (!this.kitchenPulseTick) {
       this.kitchenPulseTick = setInterval(() => {
@@ -784,7 +988,7 @@ const CloudyEngine = {
         const nowSec = (Date.now() / 1000) % (rhythmSec * 2);
         const norm =
           nowSec <= rhythmSec ? nowSec / rhythmSec : 1 - (nowSec - rhythmSec) / rhythmSec;
-        const pct = Math.round(20 + norm * 80);
+        const pct = Math.round(22 + norm * 78);
         if (this.nodes.kReadoutIntensity) {
           this.nodes.kReadoutIntensity.textContent = pct + "%";
         }
@@ -830,7 +1034,6 @@ const CloudyEngine = {
     if (this.nodes.customSetLabel) {
       this.nodes.customSetLabel.textContent = "CUSTOM SET " + setNum;
     }
-
     if (this.nodes.cName) {
       this.nodes.cName.value = data.name || "";
       this.nodes.cName.classList.toggle("has-label", !!(data.name && data.name.trim()));
@@ -842,7 +1045,6 @@ const CloudyEngine = {
       this.nodes.cTheme.textContent = this.customThemes[data.theme || 0] || this.customThemes[0];
       this.nodes.cTheme.classList.toggle("active", (data.theme || 0) > 0);
     }
-
     if (this.nodes.cKinetic) {
       this.nodes.cKinetic.classList.toggle("active", !!data.kinetic);
     }
@@ -874,12 +1076,10 @@ const CloudyEngine = {
     if (this.nodes.amVaultLabel) {
       this.nodes.amVaultLabel.textContent = "AUTO-MATCH " + amNum;
     }
-
     if (this.nodes.amSideToggleBtn) {
       this.nodes.amSideToggleBtn.setAttribute("data-side", side);
       this.nodes.amSideToggleBtn.textContent = side === "light" ? "☼ LIGHT" : "☾ DARK";
     }
-
     if (this.nodes.amName) {
       this.nodes.amName.value = sideData.name || "";
       this.nodes.amName.classList.toggle("has-label", !!(sideData.name && sideData.name.trim()));
@@ -892,7 +1092,6 @@ const CloudyEngine = {
       this.nodes.amTheme.textContent = this.customThemes[sharedTheme] || this.customThemes[0];
       this.nodes.amTheme.classList.toggle("active", sharedTheme > 0);
     }
-
     if (this.nodes.amKinetic) {
       this.nodes.amKinetic.classList.toggle("active", !!sideData.kinetic);
     }
@@ -948,13 +1147,13 @@ const CloudyEngine = {
         this.nodes.shieldSlider.value = tInt;
         this.nodes.intensityDisplay.textContent = tInt + "%";
       }
-      this.nodes.tintBtns.forEach((b) => {
-        b.classList.toggle("active", b.getAttribute("data-tint") === loadoutData.tint);
-      });
+      this.updateTintCycleUI(loadoutData.tint);
     } else {
-      this.nodes.tintBtns.forEach((b) => {
-        b.classList.remove("active");
-      });
+      if (this.nodes.shieldSlider) {
+        this.nodes.shieldSlider.value = 0;
+        this.nodes.intensityDisplay.textContent = "0%";
+      }
+      this.updateTintCycleUI("off");
     }
   },
 
@@ -1030,7 +1229,6 @@ const CloudyEngine = {
   },
 
   bindEvents() {
-    // Single-Open Accordion Headers
     this.nodes.accordionHeaders.forEach((header) => {
       header.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -1041,7 +1239,6 @@ const CloudyEngine = {
       });
     });
 
-    // "+ Configure Sets" Button inside Custom Tab opens Customization Menu Accordion
     if (this.nodes.createCustomSetBtn) {
       this.nodes.createCustomSetBtn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -1049,13 +1246,95 @@ const CloudyEngine = {
       });
     }
 
-    // Notes Scratchpad Live Counter & Persistence (2,000-Character Limit)
+    if (this.nodes.journalAddTabBtn) {
+      this.nodes.journalAddTabBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.ensureJournalTabsInitialized();
+        if (this.state.journalTabs.length >= MAX_JOURNAL_TABS) return;
+        const nextNum = this.state.journalTabs.length + 1;
+        const newId = Date.now();
+        this.state.journalTabs.push({
+          id: newId,
+          title: "Entry " + nextNum,
+          content: "",
+        });
+        this.state.activeJournalTabId = newId;
+        this.renderJournalUI();
+        if (this.state.notesInHud) this.restoreDefaultHUD();
+        if (typeof chrome !== "undefined" && chrome.storage) {
+          chrome.storage.local.set({ CloudyReader_ActiveManifest: this.state });
+        }
+      });
+    }
+
+    if (this.nodes.journalExpandBtn) {
+      this.nodes.journalExpandBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isExpanded = document.documentElement.classList.toggle("expanded-journal");
+        document.body.classList.toggle("expanded-journal", isExpanded);
+        this.nodes.journalExpandBtn.classList.toggle("active", isExpanded);
+        this.nodes.html.style.width = isExpanded ? "760px" : "560px";
+        document.body.style.width = isExpanded ? "760px" : "560px";
+      });
+    }
+
+    if (this.nodes.journalTabTitleInput) {
+      this.nodes.journalTabTitleInput.addEventListener("input", (e) => {
+        const activeTab = this.getActiveJournalTab();
+        activeTab.title = (e.target.value || "").substring(0, 22);
+        const activeBtn = this.nodes.journalTabsList
+          ? this.nodes.journalTabsList.querySelector(".journal-ear-tab.active")
+          : null;
+        if (activeBtn) {
+          activeBtn.textContent =
+            activeTab.title && activeTab.title.trim() ? activeTab.title.trim() : "Untitled";
+        }
+        if (this.state.notesInHud) {
+          this.restoreDefaultHUD();
+        }
+        if (typeof chrome !== "undefined" && chrome.storage) {
+          chrome.storage.local.set({ CloudyReader_ActiveManifest: this.state });
+        }
+      });
+    }
+
+    if (this.nodes.journalExportMdBtn) {
+      this.nodes.journalExportMdBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.exportActiveTabToMarkdown();
+      });
+    }
+
+    if (this.nodes.journalDeleteTabBtn) {
+      this.nodes.journalDeleteTabBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.ensureJournalTabsInitialized();
+        if (this.state.journalTabs.length <= 1) {
+          this.state.journalTabs[0].title = "Daily Agenda";
+          this.state.journalTabs[0].content = "";
+        } else {
+          const currentId = this.state.activeJournalTabId;
+          this.state.journalTabs = this.state.journalTabs.filter((t) => t.id !== currentId);
+          this.state.activeJournalTabId = this.state.journalTabs[0].id;
+        }
+        this.renderJournalUI();
+        if (this.state.notesInHud) {
+          this.restoreDefaultHUD();
+        }
+        if (typeof chrome !== "undefined" && chrome.storage) {
+          chrome.storage.local.set({ CloudyReader_ActiveManifest: this.state });
+        }
+      });
+    }
+
     if (this.nodes.cloudyNotesArea) {
       this.nodes.cloudyNotesArea.addEventListener("input", (e) => {
         const cleanVal = (e.target.value || "").substring(0, MAX_NOTES_CHARS);
         if (e.target.value !== cleanVal) {
           e.target.value = cleanVal;
         }
+        const activeTab = this.getActiveJournalTab();
+        activeTab.content = cleanVal;
         this.state.userNotes = cleanVal;
         this.updateNotesCounter(cleanVal);
         if (this.state.notesInHud) {
@@ -1067,7 +1346,6 @@ const CloudyEngine = {
       });
     }
 
-    // "Display in HUD?" / "Remove from HUD?" Toggle Button inside Notes Status Bar
     if (this.nodes.notesHudToggleBtn) {
       this.nodes.notesHudToggleBtn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -1080,18 +1358,16 @@ const CloudyEngine = {
       });
     }
 
-    // Quick Lamp Launchers inside Atmosphere Lamp Accordion
     this.nodes.lampQuickBtns.forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
         const targetLamp = btn.getAttribute("data-lamp-Quick") || "hub";
         this.ambient.view = targetLamp;
-        this.updateAmbientUI();
         this.nodes.ambientOverlay.classList.add("active");
+        this.updateAmbientUI();
       });
     });
 
-    // Universal [data-tooltip] Hover Listener
     document.querySelectorAll("[data-tooltip]").forEach((el) => {
       el.addEventListener("mouseenter", (e) => {
         if (e.currentTarget.id === "notesHudToggleBtn" && this.state.notesInHud) {
@@ -1102,7 +1378,6 @@ const CloudyEngine = {
           const parts = rawTip.split(":");
           const title = parts.shift().trim();
           const body = parts.join(":").trim();
-          const shouldScroll = body.length > 85;
           this.setHUDText(
             '<span class="hud-header">INFO: <span class="hud-font-name">' +
               title +
@@ -1110,16 +1385,15 @@ const CloudyEngine = {
               body +
               "</span>",
             true,
-            shouldScroll
+            body.length > 95
           );
         } else {
-          const shouldScroll = rawTip.length > 85;
           this.setHUDText(
             '<span class="hud-header">INFO: <span class="hud-font-name">System Control</span></span><span class="hud-lore">' +
               rawTip +
               "</span>",
             true,
-            shouldScroll
+            rawTip.length > 95
           );
         }
       });
@@ -1128,7 +1402,6 @@ const CloudyEngine = {
       });
     });
 
-    // Global UI Theme Cycling
     const cycleTheme = (direction) => {
       let currentIndex = this.uiThemesList.findIndex((t) => t.id === this.state.uiTheme);
       if (currentIndex === -1) currentIndex = 0;
@@ -1149,7 +1422,6 @@ const CloudyEngine = {
       cycleTheme(1);
     });
 
-    // Custom Tab Auto-Match 1 / 2 Switcher Arrows
     const cycleDeckAutoMatch = () => {
       let current = this.state.activeDeckAutoMatch || 1;
       current = current === 1 ? 2 : 1;
@@ -1177,7 +1449,6 @@ const CloudyEngine = {
       });
     }
 
-    // Customization Menu: Static Set (1 & 2) Events
     const cycleStaticVaultSet = () => {
       this.state.activeStaticSet = this.state.activeStaticSet === 1 ? 2 : 1;
       this.renderStaticSetVaultUI();
@@ -1206,7 +1477,7 @@ const CloudyEngine = {
           this.lockDownSilo();
         }
         this.flashHUDAlert(
-          '<span class="hud-header">INFO: <span class="hud-font-name">Static Sets Reset</span></span><span class="hud-lore">Static Sets 1 & 2 restored to factory Streamline and E-Reader defaults.</span>'
+          '<span class="hud-header">INFO: <span class="hud-font-name">Static Sets Reset</span></span><span class="hud-lore">Static Sets 1 & 2 restored to factory Streamline and E-Reader (Blue UI) defaults.</span>'
         );
       });
     }
@@ -1308,7 +1579,6 @@ const CloudyEngine = {
       this.lockDownSilo();
     });
 
-    // Customization Menu: Auto-Match (1 & 2) Events
     const cycleAutoMatchVaultSet = () => {
       this.state.activeVaultAutoMatch = this.state.activeVaultAutoMatch === 1 ? 2 : 1;
       this.renderAutoMatchVaultUI();
@@ -1349,7 +1619,7 @@ const CloudyEngine = {
           this.lockDownSilo();
         }
         this.flashHUDAlert(
-          '<span class="hud-header">INFO: <span class="hud-font-name">Auto-Match Sets Reset</span></span><span class="hud-lore">Auto-Match 1 & 2 restored to factory Light & Dark loadouts.</span>'
+          '<span class="hud-header">INFO: <span class="hud-font-name">Auto-Match Sets Reset</span></span><span class="hud-lore">Auto-Match 1 & 2 restored to factory Light & Dark (Orange UI) loadouts.</span>'
         );
       });
     }
@@ -1471,7 +1741,6 @@ const CloudyEngine = {
       });
     }
 
-    // Right-Column Typography Controls
     if (this.nodes.kineticFocusRow) {
       this.nodes.kineticFocusRow.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -1531,7 +1800,6 @@ const CloudyEngine = {
       this.nodes.fontSizeControlRow.addEventListener("click", cycleFontSize);
     }
 
-    // Master Power Reset
     this.nodes.masterPowerBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       if (typeof chrome !== "undefined" && chrome.storage) {
@@ -1549,11 +1817,10 @@ const CloudyEngine = {
       }
     });
 
-    // Atmosphere Lamp Hub Events
     this.nodes.ambientToggle.addEventListener("click", () => {
       this.ambient.view = "hub";
-      this.updateAmbientUI();
       this.nodes.ambientOverlay.classList.add("active");
+      this.updateAmbientUI();
     });
 
     this.nodes.btnAmbientBack.addEventListener("click", () => {
@@ -1652,6 +1919,7 @@ const CloudyEngine = {
       document.body.classList.add("expanded-lamp");
       this.nodes.html.style.width = "760px";
       document.body.style.width = "760px";
+      this.updateAmbientUI();
       if (document.querySelector(".glt-close-text")) {
         document.querySelector(".glt-close-text").textContent = "Click screen to return to normal view";
       }
@@ -1790,7 +2058,6 @@ const CloudyEngine = {
       });
     });
 
-    // Typography Suite Folder Tabs Routing
     this.nodes.folderTabs.forEach((tab) => {
       tab.addEventListener("click", (e) => {
         this.nodes.folderTabs.forEach((t) => t.classList.remove("active"));
@@ -1811,7 +2078,6 @@ const CloudyEngine = {
       });
     });
 
-    // Font & Custom/Auto-Match Buttons inside Typography Suite
     this.nodes.fontBtns.forEach((btn) => {
       btn.addEventListener("click", (e) => {
         const prevIdx = this.state.curatedThemeIndex || 0;
@@ -1834,6 +2100,11 @@ const CloudyEngine = {
             }
             this.applyUIThemeToDOM(this.state.previousUiTheme || "blue");
             this.updateTypoControlRows();
+            if (this.nodes.shieldSlider) {
+              this.nodes.shieldSlider.value = this.state.shieldIntensity || 0;
+              this.nodes.intensityDisplay.textContent = (this.state.shieldIntensity || 0) + "%";
+            }
+            this.updateTintCycleUI(this.state.selectedTint || "off");
           }
           this.lockDownSilo();
         }
@@ -1849,60 +2120,92 @@ const CloudyEngine = {
       });
     });
 
-    // Screen Tinting Controls
     this.nodes.shieldSlider.addEventListener("input", (e) => {
       const val = parseInt(e.target.value, 10);
       this.nodes.intensityDisplay.textContent = val + "%";
       const presetTarget = this.getActivePresetTarget();
       if (presetTarget) {
         presetTarget.tintIntensity = val;
+        if (val > 0 && (!presetTarget.tint || presetTarget.tint === "off")) {
+          presetTarget.tint = "amber";
+          this.updateTintCycleUI("amber");
+        }
         this.renderStaticSetVaultUI();
         this.renderAutoMatchVaultUI();
       } else {
         this.state.shieldIntensity = val;
+        if (val > 0 && (!this.state.selectedTint || this.state.selectedTint === "off")) {
+          this.state.selectedTint = "amber";
+          this.updateTintCycleUI("amber");
+        }
       }
       this.lockDownSilo();
     });
 
-    this.nodes.tintBtns.forEach((btn) => {
-      if (btn.classList.contains("theme-btn") || btn.classList.contains("override-btn")) return;
-      btn.addEventListener("click", (e) => {
-        const clickedTint = e.currentTarget.getAttribute("data-tint");
-        const isCurrentlyActive = e.currentTarget.classList.contains("active");
-        const nextTint = isCurrentlyActive ? "off" : clickedTint;
+    const cycleScreenTintMode = (direction) => {
+      const presetTarget = this.getActivePresetTarget();
+      const currentTint = presetTarget
+        ? presetTarget.tint || "off"
+        : this.state.selectedTint || "off";
+      let currentIdx = TINT_MODES.indexOf(currentTint);
+      if (currentIdx === -1) currentIdx = 0;
+      const nextIdx = (currentIdx + direction + TINT_MODES.length) % TINT_MODES.length;
+      const nextTint = TINT_MODES[nextIdx];
 
-        this.nodes.tintBtns.forEach((b) => {
-          if (!b.classList.contains("theme-btn") && !b.classList.contains("override-btn")) {
-            b.classList.remove("active");
-          }
-        });
-        if (nextTint !== "off") {
-          e.currentTarget.classList.add("active");
-        }
+      this.updateTintCycleUI(nextTint);
 
-        const presetTarget = this.getActivePresetTarget();
-        if (presetTarget) {
-          presetTarget.tint = nextTint;
-          if (nextTint !== "off" && !presetTarget.tintIntensity) {
-            presetTarget.tintIntensity = parseInt(this.nodes.shieldSlider.value, 10) || 20;
-          }
-          this.renderStaticSetVaultUI();
-          this.renderAutoMatchVaultUI();
-        } else {
-          this.state.selectedTint = nextTint;
+      if (presetTarget) {
+        presetTarget.tint = nextTint;
+        if (nextTint !== "off" && !presetTarget.tintIntensity) {
+          presetTarget.tintIntensity = parseInt(this.nodes.shieldSlider.value, 10) || 20;
         }
-        this.lockDownSilo();
+        const displayInt = nextTint === "off" ? 0 : presetTarget.tintIntensity || 0;
+        if (this.nodes.shieldSlider) {
+          this.nodes.shieldSlider.value = displayInt;
+          this.nodes.intensityDisplay.textContent = displayInt + "%";
+        }
+        this.renderStaticSetVaultUI();
+        this.renderAutoMatchVaultUI();
+      } else {
+        this.state.selectedTint = nextTint;
+        if (nextTint !== "off" && !this.state.shieldIntensity) {
+          this.state.shieldIntensity = 20;
+        }
+        const displayInt = nextTint === "off" ? 0 : this.state.shieldIntensity || 0;
+        if (this.nodes.shieldSlider) {
+          this.nodes.shieldSlider.value = displayInt;
+          this.nodes.intensityDisplay.textContent = displayInt + "%";
+        }
+      }
+      this.lockDownSilo();
+    };
+
+    if (this.nodes.tintCyclePrev) {
+      this.nodes.tintCyclePrev.addEventListener("click", (e) => {
+        e.stopPropagation();
+        cycleScreenTintMode(-1);
       });
-    });
+    }
+    if (this.nodes.tintCycleNext) {
+      this.nodes.tintCycleNext.addEventListener("click", (e) => {
+        e.stopPropagation();
+        cycleScreenTintMode(1);
+      });
+    }
+    if (this.nodes.tintCyclePill) {
+      this.nodes.tintCyclePill.addEventListener("click", (e) => {
+        e.stopPropagation();
+        cycleScreenTintMode(1);
+      });
+    }
 
-    // Right-Column Sensory Control Rows
     this.nodes.sensoryRows.forEach((row) => {
       row.addEventListener("click", (e) => {
         const tileId = row.getAttribute("data-tile-id");
         if (!tileId) return;
         if (tileId === "solfeggio-freq") {
           let currentState = parseInt(row.getAttribute("data-audio-state"), 10) || 0;
-          let nextState = (currentState + 1) % 4;
+          let nextState = (currentState + 1) % 6;
           row.setAttribute("data-audio-state", nextState);
           this.updateHzReadout(nextState);
           this.state.enabledTiles = this.state.enabledTiles.filter((id) => !id.startsWith("solfeggio-freq"));
@@ -1930,7 +2233,6 @@ const CloudyEngine = {
       });
     });
 
-    // Font Size Matrix Dropdowns & Reset
     if (this.nodes.fontDropdowns && this.nodes.fontDropdowns.length > 0) {
       this.nodes.fontDropdowns.forEach((drop, idx) => {
         const currentValue = (this.state.sizeMatrix && this.state.sizeMatrix[idx]) || drop.value;
@@ -2010,12 +2312,12 @@ const CloudyEngine = {
 
         if (!result.CloudyReader_ActiveManifest) {
           this.applyUIThemeToDOM("blue");
+          this.updateTintCycleUI("off");
           this.renderStaticSetVaultUI();
           this.renderAutoMatchVaultUI();
           this.updateDeckCustomButtons();
           this.updateTypoControlRows();
-          this.updateNotesCounter("");
-          this.renderNotesHudBtn();
+          this.renderJournalUI();
           this.restoreDefaultHUD();
           this.updateAmbientUI();
           return;
@@ -2024,28 +2326,25 @@ const CloudyEngine = {
         const saved = result.CloudyReader_ActiveManifest;
         this.state = Object.assign(this.state, saved);
 
-        if (!saved.rosterVersion || saved.rosterVersion < 9) {
-          this.state.rosterVersion = 11;
+        if (!saved.rosterVersion || saved.rosterVersion < 13) {
+          this.state.rosterVersion = 16;
           this.state.uiTheme = "blue";
           this.state.previousUiTheme = "blue";
+          this.state.selectedTint = "off";
+          this.state.shieldIntensity = 0;
           this.state.static1 = JSON.parse(JSON.stringify(DEFAULT_STATIC_SETS.static1));
           this.state.static2 = JSON.parse(JSON.stringify(DEFAULT_STATIC_SETS.static2));
           this.state.autoMatch1 = JSON.parse(JSON.stringify(DEFAULT_AUTOMATCH_SETS.autoMatch1));
           this.state.autoMatch2 = JSON.parse(JSON.stringify(DEFAULT_AUTOMATCH_SETS.autoMatch2));
+          chrome.storage.local.set({ CloudyReader_ActiveManifest: this.state });
         }
 
         this.state.previousUiTheme = this.normalizeThemeId(
           this.state.previousUiTheme || this.state.uiTheme || "blue"
         );
 
-        const savedNotes = (this.state.userNotes || "").substring(0, MAX_NOTES_CHARS);
-        this.state.userNotes = savedNotes;
         this.state.notesInHud = !!this.state.notesInHud;
-        if (this.nodes.cloudyNotesArea) {
-          this.nodes.cloudyNotesArea.value = savedNotes;
-        }
-        this.updateNotesCounter(savedNotes);
-        this.renderNotesHudBtn();
+        this.renderJournalUI();
         this.restoreDefaultHUD();
 
         if (this.nodes.ksWavelength && this.state.kitchenWl) {
@@ -2083,13 +2382,11 @@ const CloudyEngine = {
         this.state.kineticFocus = this.state.kineticFocus || false;
         this.updateTypoControlRows();
 
-        this.nodes.shieldSlider.value = this.state.shieldIntensity;
-        this.nodes.intensityDisplay.textContent = this.state.shieldIntensity + "%";
-
-        this.nodes.tintBtns.forEach((btn) => {
-          if (btn.classList.contains("theme-btn") || btn.classList.contains("override-btn")) return;
-          btn.classList.toggle("active", btn.getAttribute("data-tint") === this.state.selectedTint);
-        });
+        const initTint = this.state.selectedTint || "off";
+        const initIntensity = initTint === "off" ? 0 : this.state.shieldIntensity || 0;
+        this.nodes.shieldSlider.value = initIntensity;
+        this.nodes.intensityDisplay.textContent = initIntensity + "%";
+        this.updateTintCycleUI(initTint);
 
         let loadedIndex = this.state.curatedThemeIndex || 0;
         if (loadedIndex > 24) loadedIndex = 23;

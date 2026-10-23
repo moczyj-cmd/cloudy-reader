@@ -82,20 +82,21 @@
 
         <!-- LIGHT KITCHEN -->
         <div id="kitchenZone" class="ambient-zone kitchen-zone">
+          <div class="zone-bg" id="kitchenBg"></div>
           <div class="kitchen-container">
             <div class="kitchen-header">
               <span class="kitchen-main-title">The Light Kitchen</span>
               <button class="hub-enter-btn" style="margin-top: 0; padding: 4px 10px; font-size: 0.62rem;">Full View</button>
             </div>
             <div class="kitchen-subtitle">
-              Select up to 5 environmental wavelengths to stack:
+              Click any bay to toggle or stamp your current slider wavelength:
             </div>
             <div class="kitchen-bays-row" id="kitchenBaysRow">
-              <button class="kitchen-slot-btn active" data-slot="0" data-wl="460" data-temp="4600" title="460nm Blue">460nm</button>
-              <button class="kitchen-slot-btn" data-slot="1" data-wl="480" data-temp="5000" title="480nm Sky Blue">480nm</button>
-              <button class="kitchen-slot-btn" data-slot="2" data-wl="525" data-temp="5500" title="525nm Green">525nm</button>
-              <button class="kitchen-slot-btn" data-slot="3" data-wl="660" data-temp="2700" title="660nm Red">660nm</button>
-              <button class="kitchen-slot-btn empty" data-slot="4" title="Slot Empty">+</button>
+              <button class="kitchen-slot-btn active" data-slot="0" data-wl="460" data-temp="4600" title="460nm Deep Blue">460nm</button>
+              <button class="kitchen-slot-btn active" data-slot="1" data-wl="480" data-temp="5000" title="480nm Sky Cyan">480nm</button>
+              <button class="kitchen-slot-btn active" data-slot="2" data-wl="525" data-temp="5500" title="525nm Pure Green">525nm</button>
+              <button class="kitchen-slot-btn active" data-slot="3" data-wl="660" data-temp="2700" title="660nm Deep Amber-Red">660nm</button>
+              <button class="kitchen-slot-btn empty" data-slot="4" title="Click to stamp current slider wavelength">+</button>
             </div>
             <div class="kitchen-readout-grid">
               <div class="readout-cell">
@@ -157,10 +158,10 @@
       <!-- UNIFIED 2-COLUMN ADOBE WORKSPACE (346px Left / 214px Right) -->
       <div class="adobe-workspace">
         <!-- =================================================================
-             LEFT COLUMN: 6 Collapsible Accordions (All Closed by Default, 1 Open at a Time)
+             LEFT COLUMN: 5 Collapsible Accordions
              ================================================================= -->
         <div class="workspace-left">
-          <!-- ACCORDION 1: ABOUT CLOUDY READER -->
+          <!-- ACCORDION 1: ABOUT CLOUDY READER (Sovereign Manifesto) -->
           <div class="accordion-section" id="accAbout">
             <div class="accordion-header" data-acc-target="accAbout">
               <div class="accordion-title-wrap">
@@ -176,28 +177,34 @@
                   The Cloudy Architecture
                 </div>
                 <div class="manifesto-body">
-                  <p style="margin-bottom: 5px; color: #e2e0dc; font-weight: 700;">
-                    100% Local, Zero-Footprint Visual Ergonomics
-                  </p>
-                  <p style="margin-bottom: 5px;">
-                    Cloudy Reader does not harvest user telemetry, ping external font
-                    CDNs, run remote tracking scripts, or hide essential accessibility
-                    features behind paywalls.
+                  <p style="margin-bottom: 4px; color: #d4d4d8; font-weight: 700;">
+                    Core Philosophy: Absolute Digital Ergonomics
                   </p>
                   <p style="margin-bottom: 6px;">
-                    All open-source typefaces, state storage, and offline speech
-                    synthesis run strictly from your local machine—pure utility, zero
+                    Built to eliminate optical crowding, harsh screen glare, and
+                    reading fatigue. Cloudy Reader is a universal desktop environment
+                    engineered to make long-form reading, threat analysis, and study
+                    sessions completely frictionless.
+                  </p>
+                  <p style="margin-bottom: 4px; color: #d4d4d8; font-weight: 700;">
+                    100% Air-Gapped &amp; Sovereign
+                  </p>
+                  <p style="margin-bottom: 6px;">
+                    Zero telemetry. Zero external CDNs. Zero tracking scripts. Every
+                    typeface, focus tone, and display adjustment executes strictly on
+                    your local machine—pure utility, absolute privacy, and zero
                     network footprint.
                   </p>
                   <div class="about-divider"></div>
                   <p style="color: #888; font-size: 0.54rem; line-height: 1.32;">
                     <em
-                      >This product is not intended for use by persons with reduced
-                      physical, sensory, or mental capabilities, or lack of experience
-                      and knowledge, unless they have been given supervision or
-                      instruction concerning use of the product by a person responsible
-                      for their safety. By using this extension, you acknowledge and
-                      agree to these terms.</em
+                      >Cloudy Reader is a personal client-side display and audio
+                      preference utility, not a medical device or a certified ADA /
+                      WCAG / Section 508 compliance overlay. All controls adjust
+                      mechanical display and acoustic parameters only and are not
+                      intended to diagnose, treat, cure, or prevent any clinical
+                      condition. Use is entirely at your own risk; by using this
+                      extension, you agree to these terms.</em
                     >
                   </p>
                   <div style="text-align: center; margin-top: 7px;">
@@ -205,9 +212,9 @@
                       href="legal.html"
                       target="_blank"
                       rel="noopener noreferrer"
-                      style="color: var(--app-accent); font-size: 0.55rem; text-decoration: none; font-weight: 800; letter-spacing: 0.4px; border: 1px solid var(--bg-border); padding: 3px 9px; border-radius: 4px; background: var(--bg-main); display: inline-block;"
+                      style="color: var(--app-accent); font-size: 0.55rem; text-decoration: none; font-weight: 700; letter-spacing: 0.4px; border: 1px solid var(--bg-border); padding: 3px 9px; border-radius: 4px; background: var(--bg-main); display: inline-block;"
                     >
-                      View Legal, Privacy &amp; Font Licenses ↗
+                      View Legal, ADA, Privacy &amp; Font Licenses ↗
                     </a>
                   </div>
                   <div style="text-align: center; margin-top: 6px; padding-top: 4px; border-top: 1px solid var(--bg-border)">
@@ -220,110 +227,7 @@
             </div>
           </div>
 
-          <!-- ACCORDION 2: FONT LICENSES -->
-          <div class="accordion-section" id="accLicenses">
-            <div
-              class="accordion-header"
-              data-acc-target="accLicenses"
-              data-tooltip="Font Licenses: View full open-source copyright attributions, Nominative Fair Use disclosure, and SIL OFL / Apache 2.0 / Ubuntu license texts."
-            >
-              <div class="accordion-title-wrap">
-                <span class="acc-arrow">▸</span>
-                <span class="panel-label">FONT LICENSES</span>
-              </div>
-            </div>
-
-            <div class="accordion-body">
-              <div class="manifesto-card license-card">
-                <div class="manifesto-header">
-                  IP, Fair Use &amp; License Registry
-                </div>
-                <p class="license-intro">
-                  In strict accordance with the <strong>SIL OFL-1.1</strong>,
-                  <strong>Apache 2.0</strong>, and <strong>Ubuntu 1.0</strong> licenses,
-                  and pursuant to U.S. <strong>Nominative Fair Use</strong>, foundry and
-                  corporate names are cited strictly for factual identification and
-                  mandatory copyright attribution. Cloudy Reader is an independent,
-                  unaffiliated utility.
-                </p>
-
-                <!-- Structured Font-by-Font License Roster -->
-                <div class="license-roster-list">
-                  <div class="license-group-title">SIL OPEN FONT LICENSE 1.1 (OFL-1.1)</div>
-                  <div class="license-item"><strong>Source Sans 3</strong> <span>© Adobe Systems Inc. (OFL-1.1)</span></div>
-                  <div class="license-item"><strong>Source Code Pro</strong> <span>© Adobe Systems Inc. (OFL-1.1)</span></div>
-                  <div class="license-item"><strong>Source Serif 4</strong> <span>© Adobe Systems Inc. (OFL-1.1)</span></div>
-                  <div class="license-item"><strong>Noto Sans</strong> <span>© Google LLC (OFL-1.1)</span></div>
-                  <div class="license-item"><strong>Atkinson Hyperlegible Next</strong> <span>© Braille Institute (OFL-1.1)</span></div>
-                  <div class="license-item"><strong>IBM Plex Sans</strong> <span>© IBM Corp. (OFL-1.1)</span></div>
-                  <div class="license-item"><strong>IBM Plex Mono</strong> <span>© IBM Corp. (OFL-1.1)</span></div>
-                  <div class="license-item"><strong>Plus Jakarta Sans</strong> <span>© Tokotype / Jakarta (OFL-1.1)</span></div>
-                  <div class="license-item"><strong>Andika</strong> <span>© SIL International (OFL-1.1)</span></div>
-                  <div class="license-item"><strong>Lexend</strong> <span>© Bonnie Shaver-Troup / Google (OFL-1.1)</span></div>
-                  <div class="license-item"><strong>OpenDyslexic</strong> <span>© Abelardo Gonzalez (OFL-1.1)</span></div>
-                  <div class="license-item"><strong>Cascadia Mono</strong> <span>© Microsoft Corp. (OFL-1.1)</span></div>
-                  <div class="license-item"><strong>Fira Code</strong> <span>© The Fira Code Project (OFL-1.1)</span></div>
-                  <div class="license-item"><strong>Literata</strong> <span>© Google LLC / TypeTogether (OFL-1.1)</span></div>
-                  <div class="license-item"><strong>EB Garamond</strong> <span>© Georg Duffner &amp; Octavio Pardo (OFL-1.1)</span></div>
-                  <div class="license-item"><strong>Lora</strong> <span>© Cyreal / Olga Karpushina (OFL-1.1)</span></div>
-
-                  <div class="license-group-title" style="margin-top: 5px;">UBUNTU FONT LICENCE 1.0</div>
-                  <div class="license-item"><strong>Ubuntu Sans</strong> <span>© Canonical Ltd. (Ubuntu-1.0)</span></div>
-                  <div class="license-item"><strong>Ubuntu Sans Mono</strong> <span>© Canonical Ltd. (Ubuntu-1.0)</span></div>
-
-                  <div class="license-group-title" style="margin-top: 5px;">APACHE 2.0 &amp; SYSTEM STACK</div>
-                  <div class="license-item"><strong>Apache 2.0 Notices</strong> <span>Licensed under Apache License v2.0</span></div>
-                  <div class="license-item"><strong>Verdana / Palatino</strong> <span>Local OS System Stack (Not Bundled)</span></div>
-                </div>
-
-                <!-- Scrollable Verbatim Legal License Text Box -->
-                <div class="license-legal-scroll" tabindex="0">
-                  <strong>SIL OPEN FONT LICENSE Version 1.1</strong><br />
-                  Permission is hereby granted, free of charge, to any person obtaining
-                  a copy of the Font Software, to use, study, copy, merge, embed,
-                  modify, redistribute, and sell modified and unmodified copies of the
-                  Font Software, subject to the following conditions:<br />
-                  1) Neither the Font Software nor any of its individual components, in
-                  Original or Modified Versions, may be sold by itself.<br />
-                  2) Original or Modified Versions of the Font Software may be bundled,
-                  redistributed and/or sold with any software, provided that each copy
-                  contains the above copyright notice and this license.<br />
-                  3) No Modified Version of the Font Software may use the Reserved Font
-                  Name(s) unless explicit written permission is granted by the
-                  Corresponding Copyright Holder.<br />
-                  4) The name(s) of the Copyright Holder(s) or the Author(s) of the
-                  Font Software shall not be used to promote, endorse or advertise any
-                  Modified Version, except to acknowledge the contribution(s) of the
-                  Copyright Holder(s) and the Author(s) or with their explicit written
-                  permission.<br />
-                  5) The Font Software, modified or unmodified, in part or in whole,
-                  must be distributed entirely under this license.<br />
-                  THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.<br /><br />
-                  <strong>APACHE LICENSE, VERSION 2.0</strong><br />
-                  Licensed under the Apache License, Version 2.0; you may obtain a copy
-                  at http://www.apache.org/licenses/LICENSE-2.0. Distributed on an "AS
-                  IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND.<br /><br />
-                  <strong>UBUNTU FONT LICENCE Version 1.0</strong><br />
-                  Permission is hereby granted, free of charge, to propagate the Font
-                  Software, subject to the requirement that each copy contains the
-                  copyright notice and this licence.
-                </div>
-
-                <div style="text-align: center; margin-top: 3px;">
-                  <a
-                    href="legal.html"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style="color: var(--app-accent); font-size: 0.53rem; text-decoration: none; font-weight: 800;"
-                  >
-                    Open Full-Page Legal &amp; License Document ↗
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ACCORDION 3: TYPOGRAPHY SUITE -->
+          <!-- ACCORDION 2: TYPOGRAPHY SUITE -->
           <div class="accordion-section" id="accTypography">
             <div class="accordion-header" data-acc-target="accTypography">
               <div class="accordion-title-wrap">
@@ -435,7 +339,7 @@
             </div>
           </div>
 
-          <!-- ACCORDION 4: ATMOSPHERE LAMP -->
+          <!-- ACCORDION 3: ATMOSPHERE LAMP -->
           <div class="accordion-section" id="accAtmosphere">
             <div
               class="accordion-header"
@@ -472,14 +376,14 @@
                 class="tint-btn override-btn"
                 id="ambientToggle"
                 data-tooltip="Atmosphere Lamp Hub: Enter the full-spectrum environmental lighting control hub."
-                style="width: 100%; margin-top: 6px; font-size: 0.62rem; font-weight: 700; border-color: var(--app-accent); color: #e2e0dc;"
+                style="width: 100%; margin-top: 6px; font-size: 0.62rem; font-weight: 700; border-color: var(--app-accent); color: #d4d4d8;"
               >
                 Open Full Atmosphere Hub ↗
               </button>
             </div>
           </div>
 
-          <!-- ACCORDION 5: CUSTOMIZATION MENU -->
+          <!-- ACCORDION 4: CUSTOMIZATION MENU -->
           <div class="accordion-section" id="accCustomization">
             <div
               class="accordion-header"
@@ -543,7 +447,7 @@
                     </button>
                     <select id="c-font" class="tint-btn override-btn vault-select"></select>
                     <select id="c-size" class="tint-btn override-btn vault-select"></select>
-                    <button type="button" id="c-theme" class="tint-btn override-btn vault-btn-ellipsis">Theme: N/A</button>
+                    <button type="button" id="c-theme" class="tint-btn override-btn vault-btn-ellipsis">Theme: Blue</button>
                   </div>
 
                   <!-- Row 2: Kinetic (T) + Contrast (◐) + Tint Mode + Tint % Slider -->
@@ -630,7 +534,7 @@
                       class="tint-btn override-btn vault-btn-ellipsis"
                       data-tooltip="Auto-Match UI Theme: One shared UI Theme applied when this Auto-Match set is active."
                     >
-                      Theme: N/A
+                      Theme: Orange
                     </button>
                   </div>
 
@@ -695,38 +599,88 @@
             </div>
           </div>
 
-          <!-- ACCORDION 6: NOTES (2,000-Character Limit + Display in HUD Toggle + Status Bar) -->
+          <!-- ACCORDION 5: AGENDA NOTEBOOK -->
           <div class="accordion-section" id="accNotes">
             <div
               class="accordion-header"
               data-acc-target="accNotes"
-              data-tooltip="Notes: Quick local scratchpad for jotting down thoughts or reading notes (up to 2,000 characters)."
+              data-tooltip="Agenda Notebook: Multi-tab local planner and study notebook (up to 15 tabs, 2,000 characters each) with Markdown export for compatible journaling software."
             >
               <div class="accordion-title-wrap">
                 <span class="acc-arrow">▸</span>
-                <span class="panel-label">NOTES</span>
+                <span class="panel-label">AGENDA NOTEBOOK</span>
               </div>
             </div>
 
             <div class="accordion-body">
               <div class="notes-pad-container">
+                <!-- Top Ear-Tab Bar (Notepad Style) -->
+                <div class="journal-tab-strip">
+                  <div class="journal-tabs-scroll" id="journalTabsList"></div>
+                  <button
+                    type="button"
+                    id="journalAddTabBtn"
+                    class="journal-ear-add"
+                    data-tooltip="New Notebook Tab: Add a new Agenda or Note tab (up to 15 tabs max)."
+                  >
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    id="journalExpandBtn"
+                    class="journal-utility-btn"
+                    data-tooltip="Expand Notebook Window: Toggle a wider 760px workspace for comfortable class notes and planning."
+                  >
+                    ⤢
+                  </button>
+                </div>
+
+                <!-- Active Tab Title Input + Export Markdown + Delete Tab -->
+                <div class="journal-toolbar-row">
+                  <input
+                    type="text"
+                    id="journalTabTitleInput"
+                    class="journal-title-input"
+                    maxlength="22"
+                    placeholder="Tab Title (e.g., Daily Agenda)"
+                    data-tooltip="Rename Tab: Give this Agenda or Notebook tab a custom label (up to 22 characters)."
+                  />
+                  <button
+                    type="button"
+                    id="journalExportMdBtn"
+                    class="journal-action-pill"
+                    data-tooltip="Export Markdown (.md): Download this tab as a clean Markdown file ready for compatible journaling software."
+                  >
+                    ↓ .md
+                  </button>
+                  <button
+                    type="button"
+                    id="journalDeleteTabBtn"
+                    class="journal-action-pill delete-pill"
+                    data-tooltip="Delete Tab: Remove the current tab from your Agenda Notebook."
+                  >
+                    ×
+                  </button>
+                </div>
+
                 <textarea
                   id="cloudyNotesArea"
                   class="cloudy-notes-textarea"
                   maxlength="2000"
-                  placeholder="Type quick reading notes or reminders here..."
+                  placeholder="Write your daily agenda, to-do list, or study notes here..."
                   spellcheck="false"
                 ></textarea>
+
                 <div class="notes-status-bar">
                   <button
                     type="button"
                     id="notesHudToggleBtn"
                     class="notes-hud-btn"
-                    data-tooltip="Pin Notes to HUD: Click to display your saved notes inside the right-side HUD inspector."
+                    data-tooltip="Pin Agenda/Notes to HUD: Click to display your active tab inside the right-side HUD below the live clock."
                   >
                     Display in HUD?
                   </button>
-                  <span id="notesCharCount">0 Characters / 2000 Characters</span>
+                  <span id="notesCharCount">0 / 2000 Chars</span>
                 </div>
               </div>
             </div>
@@ -734,7 +688,7 @@
         </div>
 
         <!-- =================================================================
-             RIGHT COLUMN: Typography Controls + Sensory Controls + Screen Tinting + Full-Width HUD
+             RIGHT COLUMN: Typography Controls + Sensory Controls + Integrated Screen Tinting + Expanded HUD
              ================================================================= -->
         <div class="workspace-right">
           <!-- 1. TYPOGRAPHY CONTROLS -->
@@ -747,7 +701,7 @@
                 <div
                   class="sensory-toggle"
                   id="kineticFocusBtn"
-                  data-tooltip="Kinetic Focus: Optically anchors the eyes by bolding the first half of words, increasing reading fluency."
+                  data-tooltip="Kinetic Focus: Optically anchors the eyes by gently bolding the first 40% of each word (600 weight on light pages, 500 on dark pages)."
                 >
                   <div class="toggle-knob"></div>
                 </div>
@@ -772,7 +726,7 @@
                   type="button"
                   class="font-size-square-btn"
                   id="fontModeCycleBtn"
-                  data-tooltip="Font Size: Cycles between Default (aA) and your 3 custom Font Size Matrix presets."
+                  data-tooltip="Font Size: Cycles between Default (aA) and your 3 custom Font Size Matrix presets across webpage text."
                   aria-label="Cycle Font Size"
                 >
                   aA
@@ -799,7 +753,7 @@
                 <span class="sensory-name">Focus Tones <span class="hz-inline-readout" id="hzReadout">OFF</span></span>
                 <div
                   class="sensory-toggle"
-                  data-tooltip="Focus Tones: Generates pure local acoustic frequencies (532Hz & 582Hz) to create an ambient focus atmosphere."
+                  data-tooltip="Focus Tones (5-Mode Synthesizer): Cycles through 532Hz, 582Hz, Dual Chord, Warm Brown Noise, and Shimmer Breathe—generated 100% locally."
                 >
                   <div class="toggle-knob"></div>
                 </div>
@@ -809,7 +763,7 @@
                 <span class="sensory-name">Text To Speech</span>
                 <div
                   class="sensory-toggle"
-                  data-tooltip="Text To Speech (100% Local): Highlight text on any page, right-click, and select 'Read Text Aloud' using strictly offline OS voices."
+                  data-tooltip="Text To Speech (100% Local Female Voice): Highlight text on any page, right-click, and select 'Read Text Aloud' using offline OS voices."
                 >
                   <div class="toggle-knob"></div>
                 </div>
@@ -827,10 +781,20 @@
             </div>
           </div>
 
-          <!-- 3. SCREEN TINTING -->
+          <!-- 3. SCREEN TINTING (Integrated Triangle Cycle Selector Above the Horizontal Gauge) -->
           <div class="right-panel-block">
-            <div class="shield-header" style="margin-bottom: 2px">
+            <div class="shield-header" style="margin-bottom: 4px">
               <span class="panel-label">SCREEN TINTING</span>
+              <div
+                class="tint-cycle-pill"
+                id="tintCyclePill"
+                data-tint="off"
+                data-tooltip="Tint Mode Selector: Click the arrows or label to rotate between Off, Red, Amber, and Blackout screen tinting."
+              >
+                <span class="tint-cycle-arrow" id="tintCyclePrev">◀</span>
+                <span class="tint-cycle-label" id="tintCycleLabel">Off</span>
+                <span class="tint-cycle-arrow" id="tintCycleNext">▶</span>
+              </div>
             </div>
             <div class="slider-container">
               <input
@@ -838,27 +802,26 @@
                 id="shield-slider"
                 min="0"
                 max="100"
-                value="45"
-                data-tooltip="Screen Tinting: Amber softens cool light, Red supports evening visual comfort, and Blackout lowers absolute screen brightness. Click an active tint button again to turn it off."
+                value="0"
+                data-tooltip="Screen Tinting Intensity: Drag to adjust tint opacity. Selecting a tint at 0% automatically starts it at 20%."
               />
-              <span class="adobe-num-box" id="intensityValue">45%</span>
-            </div>
-            <div class="tint-preset-row" style="margin-top: 4px">
-              <button class="tint-btn active" data-tint="red">Red</button>
-              <button class="tint-btn" data-tint="amber">Amber</button>
-              <button class="tint-btn" data-tint="blackout">Blackout</button>
+              <span class="adobe-num-box" id="intensityValue">0%</span>
             </div>
           </div>
 
           <!-- 4. RIGHT-SIDE HUD INSPECTOR -->
           <div class="disclaimer right-hud">
+            <div class="hud-clock-bar">
+              <span class="hud-clock-dot"></span>
+              <span id="hudClockReadout">LOADING SYSTEM CLOCK...</span>
+            </div>
             <div class="marquee-container">
               <span id="disclaimerText" class="marquee-content">
                 <strong>Cloudy Reader ☁️ Ergonomic Baseline</strong><br />
                 This is a client-side environmental customization utility designed
                 to optimize visual comfort and reduce screen friction. It is not a
-                medical device and is not intended to diagnose, treat, cure, or
-                prevent any clinical condition.
+                medical device or ADA compliance overlay, and is not intended to
+                diagnose, treat, cure, or prevent any clinical condition.
                 <strong
                   >By using this extension, you acknowledge and agree to these
                   terms.</strong
