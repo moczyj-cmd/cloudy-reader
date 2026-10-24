@@ -1569,6 +1569,7 @@ function initCloudyObserver() {
 initCloudyObserver();
 
 chrome.runtime.onMessage.addListener((payload, sender, callback) => {
+  if (!sender || sender.id !== chrome.runtime.id) return false;
   if (payload.action === "applyState" && payload.state) {
     processCloudyState(payload.state);
     if (callback) callback({ success: true });
