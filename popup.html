@@ -7,6 +7,46 @@
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
+    <!-- OUT-OF-THE-BOX FIRST-RUN ONBOARDING TOUR OVERLAY -->
+    <div id="onboardingOverlay" class="onboarding-overlay" aria-hidden="true">
+      <div class="onboarding-card">
+        <div class="onboarding-top-bar">
+          <div class="onboarding-brand">
+            <img src="cloudy-icon.png" alt="" class="onboarding-icon" />
+            <span>CLOUDY READER // QUICK TOUR</span>
+          </div>
+          <span class="onboarding-step-badge" id="tourStepBadge">STEP 1 OF 4</span>
+        </div>
+
+        <div class="onboarding-content">
+          <h2 class="onboarding-title" id="tourTitle">Welcome to Absolute Digital Ergonomics</h2>
+          <p class="onboarding-body" id="tourBody">
+            Cloudy Reader is a 100% local, zero-telemetry workspace engineered to eliminate optical crowding and screen glare.
+          </p>
+          <div class="onboarding-Visual-hint" id="tourHintBox">
+            <span class="onboarding-hint-tag" id="tourHintTag">WORKSPACE LAYOUT</span>
+            <span class="onboarding-hint-text" id="tourHintText">
+              Left Column: 5 collapsible feature suites • Right Column: Instant toggles, Screen Tinting &amp; Live HUD Inspector.
+            </span>
+          </div>
+        </div>
+
+        <div class="onboarding-footer">
+          <button type="button" class="onboarding-btn ghost" id="tourSkipBtn">Skip Tour</button>
+          <div class="onboarding-dots" id="tourDots">
+            <span class="tour-dot active" data-step="0"></span>
+            <span class="tour-dot" data-step="1"></span>
+            <span class="tour-dot" data-step="2"></span>
+            <span class="tour-dot" data-step="3"></span>
+          </div>
+          <div class="onboarding-nav-group">
+            <button type="button" class="onboarding-btn" id="tourPrevBtn" disabled>← Back</button>
+            <button type="button" class="onboarding-btn primary" id="tourNextBtn">Next →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- AMBIENT LIGHTING HUB OVERLAY -->
     <div id="ambientOverlay" class="ambient-overlay" data-view="hub">
       <button id="btnAmbientBack" class="ambient-back-btn">← Go Back</button>
@@ -140,10 +180,18 @@
       <!-- CLEAN TOP BAR -->
       <header class="app-header">
         <h1 class="header-title">
-          <img src="gemini-svg.png" alt="" style="width: 18px; height: 18px; margin-right: 7px; object-fit: contain;" />
+          <img src="cloudy-icon.png" alt="" style="width: 18px; height: 18px; margin-right: 7px; object-fit: contain;" />
           Cloudy Reader
         </h1>
         <div style="display: flex; align-items: center; gap: 6px">
+          <button
+            class="tint-btn override-btn"
+            id="quickTourBtn"
+            data-tooltip="Quick Tour: Launch the interactive 4-step walkthrough of Cloudy Reader's core features."
+            style="margin: 0; padding: 4px 8px; font-size: 0.72rem; font-weight: 800; border-radius: 4px; width: auto; height: 24px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);"
+          >
+            ?
+          </button>
           <button
             class="tint-btn override-btn"
             id="masterPowerBtn"
@@ -173,7 +221,7 @@
             <div class="accordion-body">
               <div class="manifesto-card">
                 <div class="manifesto-header">
-                  <img src="gemini-svg.png" alt="" style="width: 14px; height: 14px; object-fit: contain" />
+                  <img src="cloudy-icon.png" alt="" style="width: 14px; height: 14px; object-fit: contain" />
                   The Cloudy Architecture
                 </div>
                 <div class="manifesto-body">

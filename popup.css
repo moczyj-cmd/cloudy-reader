@@ -2041,3 +2041,180 @@ html.expanded-lamp #ambientFullScreenBtn {
   color: #fff;
   transform: scale(1.1);
 }
+
+/* ==========================================================================
+   OUT-OF-THE-BOX FIRST-RUN ONBOARDING TOUR OVERLAY
+   ========================================================================== */
+.onboarding-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100000;
+  background-color: rgba(15, 15, 18, 0.88);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.onboarding-overlay.active {
+  display: flex;
+  opacity: 1;
+}
+.onboarding-card {
+  width: 100%;
+  max-width: 468px;
+  background-color: var(--bg-main);
+  border: 1px solid var(--bg-border);
+  border-top: 3px solid var(--app-accent);
+  border-radius: 6px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.onboarding-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--bg-border);
+  padding-bottom: 8px;
+}
+.onboarding-brand {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: "Ubuntu Sans Mono", "Cascadia Mono", monospace;
+  font-size: 9.86px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: #d4d4d8;
+}
+.onboarding-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+.onboarding-step-badge {
+  font-family: "Ubuntu Sans Mono", "Cascadia Mono", monospace;
+  font-size: 8.84px;
+  font-weight: 700;
+  color: var(--app-accent);
+  background-color: var(--bg-tile);
+  border: 1px solid var(--bg-border);
+  padding: 2px 7px;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+}
+.onboarding-content {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-height: 126px;
+}
+.onboarding-title {
+  font-size: 13.6px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.2px;
+}
+.onboarding-body {
+  font-size: 10.54px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+.onboarding-Visual-hint {
+  margin-top: auto;
+  background-color: var(--bg-tile);
+  border: 1px solid var(--bg-border);
+  border-left: 3px solid var(--app-accent);
+  border-radius: 4px;
+  padding: 7px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.onboarding-hint-tag {
+  font-family: "Ubuntu Sans Mono", "Cascadia Mono", monospace;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: var(--app-accent);
+}
+.onboarding-hint-text {
+  font-size: 9.86px;
+  color: #d4d4d8;
+  line-height: 1.38;
+}
+.onboarding-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--bg-border);
+  padding-top: 9px;
+}
+.onboarding-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tour-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--bg-border);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.tour-dot.active {
+  background-color: var(--app-accent);
+  transform: scale(1.25);
+}
+.onboarding-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.onboarding-btn {
+  background-color: var(--bg-tile);
+  border: 1px solid var(--bg-border);
+  color: #d4d4d8;
+  font-size: 10.2px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.onboarding-btn:hover:not(:disabled) {
+  border-color: var(--text-muted);
+  color: #ffffff;
+}
+.onboarding-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.onboarding-btn.ghost {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--text-muted);
+  padding-left: 4px;
+}
+.onboarding-btn.ghost:hover {
+  color: #d4d4d8;
+  border-color: transparent;
+}
+.onboarding-btn.primary {
+  background-color: var(--app-accent);
+  border-color: var(--app-accent);
+  color: #ffffff;
+  font-weight: 700;
+}
+.onboarding-btn.primary:hover {
+  filter: brightness(1.1);
+}

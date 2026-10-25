@@ -11,15 +11,15 @@
     "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'none';"
   },
   "icons": {
-    "16": "gemini-svg.png",
-    "32": "gemini-svg.png",
-    "48": "gemini-svg.png",
-    "128": "gemini-svg.png"
+    "16": "cloudy-icon.png",
+    "32": "cloudy-icon.png",
+    "48": "cloudy-icon.png",
+    "128": "cloudy-icon.png"
   },
   "action": {
     "default_popup": "popup.html",
     "default_title": "Cloudy Reader",
-    "default_icon": "gemini-svg.png"
+    "default_icon": "cloudy-icon.png"
   },
   "content_scripts": [
     {
@@ -32,7 +32,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["fonts/*", "legal.html", "gemini-svg.png"],
+      "resources": ["fonts/*", "legal.html", "cloudy-icon.png"],
       "matches": ["<all_urls>"]
     }
   ]

@@ -158,25 +158,38 @@
     <div class="legal-container">
       <div class="header-bar">
         <div class="brand-title">
-          <img src="gemini-svg.png" alt="" style="width: 24px; height: 24px; object-fit: contain;" />
+          <img src="cloudy-icon.png" alt="" style="width: 24px; height: 24px; object-fit: contain;" />
           Cloudy Reader — Legal, Privacy &amp; Licensing Registry
         </div>
         <span class="badge">100% LOCAL AIR-GAPPED BUILD</span>
       </div>
 
-      <h2>1. Zero-Telemetry Privacy Policy</h2>
+      <h2>1. Zero-Telemetry Privacy &amp; Permissions Policy</h2>
       <div class="shield-callout">
         <p>
           <strong>Zero Data Collection Guarantee:</strong> Cloudy Reader does not collect,
           harvest, store, transmit, or sell any personal data, browsing history, IP
-          addresses, or usage analytics.
+          addresses, or usage analytics. Extension pages enforce a strict
+          <code>connect-src 'none'</code> Content Security Policy that blocks external
+          network transmissions.
         </p>
         <p>
           <strong>100% Local Storage &amp; Execution:</strong> All user preferences, custom
-          typography presets, and scratchpad notes are stored strictly on your local storage
-          hardware via <code>chrome.storage.local</code>. All bundled open-source fonts and
-          speech synthesis routines execute locally on your device without pinging external
-          font CDNs or remote telemetry servers.
+          typography presets, and Agenda Notebook entries are stored strictly on your local
+          hardware via <code>chrome.storage.local</code>. Users are responsible for exporting
+          important notes to Markdown (<code>.md</code>), as clearing browser data or
+          uninstalling the extension will erase local storage. All bundled open-source fonts
+          and Web Audio synthesizer routines execute locally on your device, and Text-to-Speech
+          utilizes your browser's native Web Speech API (strictly prioritizing offline
+          <code>localService</code> OS voices).
+        </p>
+        <p>
+          <strong>Browser Permissions Disclosure:</strong> Permissions declared in
+          <code>manifest.json</code> (<code>storage</code>, <code>activeTab</code>,
+          <code>tabs</code>, <code>contextMenus</code>, and host access
+          <code>&lt;all_urls&gt;</code>) are utilized exclusively on-device to apply
+          user-selected CSS/DOM styles, synchronize theme states across open tabs, and
+          trigger local right-click Text-to-Speech.
         </p>
       </div>
 
@@ -203,15 +216,30 @@
         entities.
       </p>
 
-      <h2>3. Ergonomic &amp; Non-Medical Disclaimer</h2>
+      <h2>3. Ergonomic, ADA, Photosensitivity &amp; Liability Disclaimer</h2>
       <p>
-        Cloudy Reader is a client-side environmental customization utility designed to
-        optimize visual comfort and reduce screen friction. It is not a medical device and
-        is not intended to diagnose, treat, cure, or prevent any clinical or ophthalmic
-        condition. This product is not intended for use by persons with reduced physical,
-        sensory, or mental capabilities unless given supervision or instruction by a person
-        responsible for their safety. By using this extension, you acknowledge and agree to
-        these terms.
+        <strong>Non-Medical &amp; Non-ADA Utility:</strong> Cloudy Reader is a client-side
+        environmental customization utility designed to optimize subjective visual comfort
+        and reduce screen friction. It is not a medical device, nor is it a certified
+        Americans with Disabilities Act (ADA), Section 508, or WCAG compliance overlay. It
+        is not intended to diagnose, treat, cure, or prevent any clinical, neurological, or
+        ophthalmic condition.
+      </p>
+      <p>
+        <strong>Photosensitivity &amp; Acoustic Safety Warning:</strong> This extension
+        includes optional full-screen chromatic lighting overlays, pulsing brightness
+        cycles, and synthesized audio tones. A small percentage of individuals may
+        experience photosensitive reactions, dizziness, migraines, or visual discomfort when
+        exposed to certain light wavelengths, color inversions, or rhythmic visual patterns.
+        Keep system audio at a comfortable volume when using Focus Tones. Discontinue use
+        immediately if you experience any discomfort.
+      </p>
+      <p>
+        <strong>"AS IS" Software Warranty &amp; Limitation of Liability:</strong> CLOUDY
+        READER IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. IN NO
+        EVENT SHALL THE DEVELOPER BE LIABLE FOR ANY CLAIM, DAMAGES, DATA LOSS, WEBPAGE
+        RENDERING ALTERATIONS, OR OTHER LIABILITY ARISING FROM THE USE OR INABILITY TO USE
+        THIS EXTENSION. By using this extension, you acknowledge and agree to these terms.
       </p>
 
       <h2>4. Bundled Typography Attribution Registry</h2>
@@ -270,7 +298,7 @@ DEFINITIONS
 
 “Author” refers to any designer, engineer, programmer, technical writer or other person who contributed to the Font Software.
 
-PERMISSION & CONDITIONS
+PERMISSION &amp; CONDITIONS
 Permission is hereby granted, free of charge, to any person obtaining a copy of the Font Software, to use, study, copy, merge, embed, modify, redistribute, and sell modified and unmodified copies of the Font Software, subject to the following conditions:
 
 Neither the Font Software nor any of its individual components, in Original or Modified Versions, may be sold by itself.
@@ -289,8 +317,6 @@ This license becomes null and void if any of the above conditions are not met.
 DISCLAIMER
 THE FONT SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM OTHER DEALINGS IN THE FONT SOFTWARE.
 
-Last updated on 12 January 2026
-
 <strong>====================================================================
 2. UBUNTU FONT LICENCE (Version 1.0)
 ====================================================================</strong> 
@@ -308,7 +334,7 @@ Definitions
 "Substantially Changed" refers to Modified Versions which can be easily identified as dissimilar to the Font Software by users of the Font Software comparing the Original Version with the Modified Version.
 To "Propagate" a work means to do anything with it that, without permission, would make you directly or secondarily liable for infringement under applicable copyright law, except executing it on a computer or modifying a private copy. Propagation includes copying, distribution (with or without modification and with or without charging a redistribution fee), making available to the public, and in some countries other activities as well.
 
-Permission & Conditions
+Permission &amp; Conditions
 This licence does not grant any rights under trademark law and all such rights are reserved.
 Permission is hereby granted, free of charge, to any person obtaining a copy of the Font Software, to propagate the Font Software, subject to the below conditions:
 - Each copy of the Font Software must contain the above copyright notice and this licence. These can be included either as stand-alone text files, human-readable headers or in the appropriate machine-readable metadata fields within text or binary files as long as those fields can be easily viewed by the user.

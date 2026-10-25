@@ -1,6 +1,6 @@
 /**
  * ==========================================================================
- * Cloudy Reader ☁️ Synchronized Engine & State Persistence Layer (v1.6 Master)
+ * Cloudy Reader ☁️ Synchronized Engine & State Persistence Layer (v1.8.0 Master)
  * ==========================================================================
  */
 
@@ -87,6 +87,38 @@ const CloudyEngine = {
   activeTabIsDark: false,
   kitchenPulseTick: null,
   hudClockInterval: null,
+  tourCurrentStep: 0,
+
+  tourSteps: [
+    {
+      badge: "STEP 1 OF 4",
+      title: "Welcome to Absolute Digital Ergonomics",
+      body: "Cloudy Reader is a 100% local, zero-telemetry workspace engineered to eliminate optical crowding, eye strain, and harsh screen glare.",
+      tag: "WORKSPACE ARCHITECTURE",
+      hint: "Left Column: 5 collapsible feature suites • Right Column: Instant sensory toggles, Screen Tinting & Live HUD Inspector.",
+    },
+    {
+      badge: "STEP 2 OF 4",
+      title: "Master Typography & Curated Suits",
+      body: "Browse 20 professional open-source fonts categorized into Power, Wellness, Tech, and Scholar suites, plus Custom Static Sets and Auto-Match pairs.",
+      tag: "TYPOGRAPHY SUITE",
+      hint: "Hover over any font button in the Roster to read its full typographic history and legibility science instantly inside the live HUD.",
+    },
+    {
+      badge: "STEP 3 OF 4",
+      title: "Focus Tones & Atmosphere Lighting",
+      body: "Activate localized Solfeggio acoustic frequencies (532Hz, 582Hz, Dual Chord, Brown Noise, Shimmer) and full-spectrum environmental lighting hubs.",
+      tag: "SENSORY SUITE",
+      hint: "Use the Atmosphere Lamp accordion or Light Kitchen to dial in restorative 525nm green wavelengths, deep blues, and breathing color rhythms.",
+    },
+    {
+      badge: "STEP 4 OF 4",
+      title: "Agenda Notebook & Privacy Shield",
+      body: "Maintain up to 15 local planning tabs (2,000 chars each) with instant Markdown (.md) export and live HUD pinning. 100% air-gapped protection.",
+      tag: "SOVEREIGN PRIVACY",
+      hint: "All settings are stored strictly on-device via chrome.storage.local with zero external server pings. You are fully locked in. Enjoy the read!",
+    },
+  ],
 
   state: {
     rosterVersion: 16,
@@ -196,7 +228,7 @@ const CloudyEngine = {
     "After paying millions of dollars in corporate font licensing fees for over 50 years, IBM commissioned their own signature masterpiece from scratch and gifted it to the world. Built around 'Man vs. Machine,' look closely: warm, human curves on the outside, paired with razor-sharp machine cuts on the inside.",
     "Commissioned in 2020 by the Government of Jakarta and designed by Gumpita Rahayu at Tokotype foundry for the city's '+Jakarta' civic identity. Inspired by classic 1920s German geometric grotesques, its precision ink-traps and open apertures were engineered to unify a modern metropolis of 10 million people.",
     "Crafted by SIL International—the actual architects of the global Open Font License—specifically for foundational literacy. Every letter is stripped of visual ambiguity and spaced to breathe, letting tired eyes glide across the page with zero friction.",
-    "Born from clinical research by educational therapist Dr. Bonnie Shaver-Troup and commissioned by Google. Built on a breakthrough discovery: most reading fatigue is actually caused by optical crowding. Lexend opens the visual channel to quiet eye stress on contact.",
+    "Born from clinical research by educational therapist Dr. Bonnie Shaver-Troup and commissioned by Google. Built on a breakthrough discovery: most reading fatigue is actually caused by optical crowding. Lexend opens the visual channel to reduce visual crowding and reading fatigue.",
     "Created by Abelardo Gonzalez using 'visual gravity.' Each letter is forged with a heavy, weighted baseline and unique asymmetry—acting like a physical anchor that stops characters from flipping, rotating, or swimming on the page.",
     "Hand-crafted pixel-by-pixel by legendary master Matthew Carter before smoothing a single curve. With massive lowercase height and generous spacing, it remains the official accessibility standard for Texas Health & Human Services.",
     "Microsoft's flagship terminal gem, forged specifically as the default voice of Visual Studio Code. Built for operators who stare at complex logic for 12 hours a day, keeping every bracket, number, and word unmistakably crisp.",
@@ -233,6 +265,7 @@ const CloudyEngine = {
     this.hydrateSilo();
     this.updateDeckCustomButtons();
     this.updateAmbientUI();
+    this.initQuickTour();
   },
 
   cacheDOM() {
@@ -358,6 +391,109 @@ const CloudyEngine = {
     this.nodes.resetFontSizesBtn = document.getElementById("resetFontSizesBtn");
     this.nodes.fontDropdowns = document.querySelectorAll(".font-dropdown");
     this.nodes.masterPowerBtn = document.getElementById("masterPowerBtn");
+    this.nodes.quickTourBtn = document.getElementById("quickTourBtn");
+    this.nodes.onboardingOverlay = document.getElementById("onboardingOverlay");
+    this.nodes.tourStepBadge = document.getElementById("tourStepBadge");
+    this.nodes.tourTitle = document.getElementById("tourTitle");
+    this.nodes.tourBody = document.getElementById("tourBody");
+    this.nodes.tourHintTag = document.getElementById("tourHintTag");
+    this.nodes.tourHintText = document.getElementById("tourHintText");
+    this.nodes.tourPrevBtn = document.getElementById("tourPrevBtn");
+    this.nodes.tourNextBtn = document.getElementById("tourNextBtn");
+    this.nodes.tourSkipBtn = document.getElementById("tourSkipBtn");
+  },
+
+  // Out-of-the-Box Quick Tour Controller
+  initQuickTour() {
+    if (!this.nodes.onboardingOverlay) return;
+
+    const renderStep = (idx) => {
+      this.tourCurrentStep = idx;
+      const stepData = this.tourSteps[idx];
+      if (!stepData) return;
+
+      if (this.nodes.tourStepBadge) this.nodes.tourStepBadge.textContent = stepData.badge;
+      if (this.nodes.tourTitle) this.nodes.tourTitle.textContent = stepData.title;
+      if (this.nodes.tourBody) this.nodes.tourBody.textContent = stepData.body;
+      if (this.nodes.tourHintTag) this.nodes.tourHintTag.textContent = stepData.tag;
+      if (this.nodes.tourHintText) this.nodes.tourHintText.textContent = stepData.hint;
+
+      if (this.nodes.tourPrevBtn) {
+        this.nodes.tourPrevBtn.disabled = idx === 0;
+      }
+      if (this.nodes.tourNextBtn) {
+        this.nodes.tourNextBtn.textContent = idx === this.tourSteps.length - 1 ? "Finish ✓" : "Next →";
+      }
+
+      const dots = this.nodes.onboardingOverlay.querySelectorAll(".tour-dot");
+      dots.forEach((dot, dIdx) => {
+        dot.classList.toggle("active", dIdx === idx);
+      });
+    };
+
+    const openTour = () => {
+      renderStep(0);
+      this.nodes.onboardingOverlay.classList.add("active");
+    };
+
+    const closeTour = () => {
+      this.nodes.onboardingOverlay.classList.remove("active");
+      if (typeof chrome !== "undefined" && chrome.storage) {
+        chrome.storage.local.set({ CloudyReader_TourCompleted: true });
+      }
+    };
+
+    if (this.nodes.quickTourBtn) {
+      this.nodes.quickTourBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openTour();
+      });
+    }
+
+    if (this.nodes.tourNextBtn) {
+      this.nodes.tourNextBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (this.tourCurrentStep < this.tourSteps.length - 1) {
+          renderStep(this.tourCurrentStep + 1);
+        } else {
+          closeTour();
+        }
+      });
+    }
+
+    if (this.nodes.tourPrevBtn) {
+      this.nodes.tourPrevBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (this.tourCurrentStep > 0) {
+          renderStep(this.tourCurrentStep - 1);
+        }
+      });
+    }
+
+    if (this.nodes.tourSkipBtn) {
+      this.nodes.tourSkipBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeTour();
+      });
+    }
+
+    const dotEls = this.nodes.onboardingOverlay.querySelectorAll(".tour-dot");
+    dotEls.forEach((dot) => {
+      dot.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const targetStep = parseInt(dot.getAttribute("data-step"), 10);
+        if (!isNaN(targetStep)) renderStep(targetStep);
+      });
+    });
+
+    // Check if first install / first run
+    if (typeof chrome !== "undefined" && chrome.storage) {
+      chrome.storage.local.get(["CloudyReader_TourCompleted"], (res) => {
+        if (!res.CloudyReader_TourCompleted) {
+          setTimeout(openTour, 400);
+        }
+      });
+    }
   },
 
   // Calm Live System Clock (Seconds Removed for Zero Distraction)
